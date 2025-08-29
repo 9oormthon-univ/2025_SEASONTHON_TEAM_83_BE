@@ -1,0 +1,26 @@
+#spring:
+#  jpa:
+#    #전송 쿼리 확인
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#
+#
+#    #테이블 생성 후에 data.sql 실행
+#    defer-datasource-initialization: true
+# 구름톤 설정
+
+ #UMC 설정
+spring:
+  profiles:
+    active: local
+
+jwt:
+  issuer: ajufresh@gmail.com
+  secret_key: ${JWT_SECRET}
+  accessTokenExpiration: 3600000 #1시간
+  #refreshTokenExpiration: 1209600000 #2주
+kakao:
+  client_id: ${KAKAO_API_KEY}
+  redirect_uri: ${REDIRECT_URI}
