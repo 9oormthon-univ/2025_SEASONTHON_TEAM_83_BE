@@ -17,7 +17,7 @@ public class MemberRequestDto {
     }
 
     @Getter
-    public static class loginDto{
+    public static class LoginDto{
         String emailOrNickname;
         String password;
     }
@@ -26,4 +26,11 @@ public class MemberRequestDto {
     public static class InterestsDto{
         Set<Interest> interests;
     }
+
+    @Getter
+    public static class AgreementsDto{
+        Boolean allowLocation;
+        Boolean allowPush;
+    }
+
 }

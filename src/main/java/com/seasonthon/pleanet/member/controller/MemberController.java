@@ -13,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -36,16 +33,26 @@ public class MemberController {
 
     //로그인
     @PostMapping("/login")
-    public ApiResponse<MemberResponseDto.LoginDto> login(@RequestBody MemberRequestDto.loginDto request ){
+    public ApiResponse<MemberResponseDto.LoginDto> login(@RequestBody MemberRequestDto.LoginDto request ){
         MemberResponseDto.LoginDto loginDto = memberService.login(request.getEmailOrNickname(), request.getPassword());
         return ApiResponse.onSuccess(loginDto);
     }
 
     //관심 활동 설정
     @PostMapping("/interests")
-    public ApiResponse<MemberResponseDto.InterestsDto> setInterests(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody @Valid MemberRequestDto.InterestsDto request){
+    public ApiResponse<MemberResponseDto.InterestsDto> setInterests(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberRequestDto.InterestsDto request){
         MemberResponseDto.InterestsDto interestsDto = memberService.setInterests(userDetails.getId(),request.getInterests());
         return ApiResponse.onSuccess(interestsDto);
+    }
+
+    //동의 항목 수정
+    @PatchMapping("/agreements")
+    public ApiResponse<String> updateAgreements(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody MemberRequestDto.AgreementsDto request
+    ) {
+        String message = memberService.updateAgreements(userDetails.getId(), request);
+        return ApiResponse.onSuccess(message);
     }
 
 
