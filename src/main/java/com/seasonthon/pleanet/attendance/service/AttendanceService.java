@@ -84,5 +84,13 @@ public class AttendanceService {
 
         return new AttendanceCheckResponseDto("출석되었습니다", today.toString(), 3);
     }
+
+    public int getCurrentMonthPoints(Long memberId) {
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+
+        return pointRepository.getMonthlyEarnedPoints(memberId, year, month);
+    }
 }
 

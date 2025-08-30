@@ -3,6 +3,7 @@ package com.seasonthon.pleanet.attendance.controller;
 import com.seasonthon.pleanet.attendance.domain.Attendance;
 import com.seasonthon.pleanet.attendance.dto.AttendanceCheckResponseDto;
 import com.seasonthon.pleanet.attendance.dto.AttendanceResponseDto;
+import com.seasonthon.pleanet.attendance.dto.MonthlyPointResponseDto;
 import com.seasonthon.pleanet.attendance.service.AttendanceService;
 import com.seasonthon.pleanet.common.config.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +56,16 @@ public class AttendanceController {
     public ResponseEntity<AttendanceCheckResponseDto> checkToday(Authentication authentication) {
         AttendanceCheckResponseDto response = attendanceService.checkToday(authentication);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<MonthlyPointResponseDto> getCurrentMonthPoints(Authentication authentication) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long memberId = userDetails.getId();
+
+        int totalPoints = attendanceService.getCurrentMonthPoints(memberId);
+
+        return ResponseEntity.ok(new MonthlyPointResponseDto(totalPoints));
     }
 }
