@@ -39,10 +39,6 @@ public class Member extends BaseEntity {
 
     private String password;
 
-    @Builder.Default
-    @ColumnDefault("0")
-    private Integer point = 0;
-
     private LocalDate birthday;
 
     private String profileUrl;
