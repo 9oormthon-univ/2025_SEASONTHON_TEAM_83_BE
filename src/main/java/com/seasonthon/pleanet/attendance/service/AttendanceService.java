@@ -2,6 +2,7 @@ package com.seasonthon.pleanet.attendance.service;
 
 import com.seasonthon.pleanet.attendance.domain.Attendance;
 import com.seasonthon.pleanet.attendance.dto.AttendanceCheckResponseDto;
+import com.seasonthon.pleanet.attendance.dto.AttendanceResponseDto;
 import com.seasonthon.pleanet.attendance.repository.AttendanceRepository;
 import com.seasonthon.pleanet.common.config.security.CustomUserDetails;
 import com.seasonthon.pleanet.member.domain.Member;
@@ -14,7 +15,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +29,26 @@ public class AttendanceService {
     private final PointRepository pointRepository;
     private final MemberRepository memberRepository;
 
-    public List<Attendance> getMonthlyAttendance(Long memberId, int year, int month) {
-        return attendanceRepository.findByMemberAndYearMonth(memberId, year, month);
+    public List<AttendanceResponseDto> getMonthlyAttendance(Long memberId, int year, int month) {
+        // DB에서 이번 달 출석한 날짜들 가져오기
+        List<Attendance> attendances = attendanceRepository.findByMemberAndYearMonth(memberId, year, month);
+
+        // 출석한 날짜만 set으로 저장 (빠른 조회용)
+        Set<LocalDate> checkedDates = attendances.stream()
+                .map(Attendance::getAttendanceDate)
+                .collect(Collectors.toSet());
+
+        // 이번 달의 전체 날짜
+        YearMonth yearMonth = YearMonth.of(year, month);
+        List<AttendanceResponseDto> response = new ArrayList<>();
+
+        for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
+            LocalDate date = LocalDate.of(year, month, day);
+            boolean checked = checkedDates.contains(date);
+            response.add(new AttendanceResponseDto(date, checked));
+        }
+
+        return response;
     }
 
     public AttendanceCheckResponseDto checkToday(Authentication authentication) {

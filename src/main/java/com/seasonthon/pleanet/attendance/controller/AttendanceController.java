@@ -10,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,22 +24,31 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @GetMapping("/monthly")
-    public ResponseEntity<List<AttendanceResponseDto>> getMonthlyAttendance(
-            @RequestParam int year,
-            @RequestParam int month,
-            Authentication authentication) { // 로그인 정보 주입받음
+    public ResponseEntity<Map<String, Object>> getMonthlyAttendance(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            Authentication authentication) {
 
-        // 토큰/세션에서 로그인된 사용자 꺼내오기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Long memberId = userDetails.getId();
 
-        List<Attendance> attendances = attendanceService.getMonthlyAttendance(memberId, year, month);
+        // year, month 없으면 오늘 날짜 기준
+        LocalDate today = LocalDate.now();
+        int targetYear = (year != null) ? year : today.getYear();
+        int targetMonth = (month != null) ? month : today.getMonthValue();
 
-        List<AttendanceResponseDto> response = attendances.stream()
-                .map(a -> new AttendanceResponseDto(a.getAttendanceDate(), true))
-                .collect(Collectors.toList());
+        List<AttendanceResponseDto> attendances =
+                attendanceService.getMonthlyAttendance(memberId, targetYear, targetMonth);
 
-        return ResponseEntity.ok(response);
+        long totalChecked = attendances.stream().filter(AttendanceResponseDto::isChecked).count();
+
+        // 응답 포맷 맞춰주기
+        Map<String, Object> result = new HashMap<>();
+        result.put("month", String.format("%d-%02d", targetYear, targetMonth));
+        result.put("attendances", attendances);
+        result.put("totalChecked", totalChecked);
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/check")
