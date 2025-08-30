@@ -58,7 +58,7 @@ public class AttendanceController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/points/current-month")
+    @GetMapping("/summary")
     public ResponseEntity<MonthlyPointResponseDto> getCurrentMonthPoints(Authentication authentication) {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
