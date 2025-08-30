@@ -19,11 +19,11 @@ public class AttendanceController {
 
     @GetMapping("/monthly")
     public ResponseEntity<List<AttendanceResponseDto>> getMonthlyAttendance(
-            @RequestParam Long userId,
+            @RequestParam Long memberId,
             @RequestParam int year,
             @RequestParam int month) {
 
-        List<Attendance> attendances = attendanceService.getMonthlyAttendance(userId, year, month);
+        List<Attendance> attendances = attendanceService.getMonthlyAttendance(memberId, year, month);
 
         List<AttendanceResponseDto> response = attendances.stream()
                 .map(a -> new AttendanceResponseDto(a.getAttendanceDate(), true))
@@ -32,4 +32,3 @@ public class AttendanceController {
         return ResponseEntity.ok(response);
     }
 }
-

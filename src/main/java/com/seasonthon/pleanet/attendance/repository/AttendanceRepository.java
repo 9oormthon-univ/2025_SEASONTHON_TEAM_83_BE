@@ -10,9 +10,9 @@ import java.util.List;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Query("SELECT a FROM Attendance a " +
-            "WHERE a.userId = :userId " +
+            "WHERE a.member.id = :memberId " +
             "AND FUNCTION('YEAR', a.attendanceDate) = :year " +
             "AND FUNCTION('MONTH', a.attendanceDate) = :month")
-    List<Attendance> findByUserIdAndYearMonth(Long userId, int year, int month);
+    List<Attendance> findByMemberAndYearMonth(Long memberId, int year, int month);
 }
 
