@@ -21,6 +21,16 @@ public class MemberConverter {
                 .build();
     }
 
+
+    public static MemberResponseDto.AgreementsDto toAgreementsDto(Member member) {
+        return MemberResponseDto.AgreementsDto.builder()
+                .allowLocation(member.getAllowLocation())
+                .allowPush(member.getAllowPush())
+                .build();
+    }
+
+
+
     public static Member toMember(MemberRequestDto.JoinDto request){
 
         return Member.builder()

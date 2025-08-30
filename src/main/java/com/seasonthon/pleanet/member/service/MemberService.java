@@ -101,31 +101,21 @@ public class MemberService{
         return MemberConverter.toInterestsDto(member);
     }
 
-    public String updateAgreements(Long memberId, MemberRequestDto.AgreementsDto request) {
+    public MemberResponseDto.AgreementsDto updateAgreements(Long memberId, MemberRequestDto.AgreementsDto request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
-
-        // 상태 메시지 빌더
-        List<String> messages = new ArrayList<>();
 
         // 푸시 알림 설정 변경
         if (request.getAllowPush() != null) {
             member.setAllowPush(request.getAllowPush());
-            messages.add(request.getAllowPush() ? "푸시 알림을 허용했습니다." : "푸시 알림을 해지했습니다.");
         }
 
         // 위치 정보 설정 변경
         if (request.getAllowLocation() != null) {
             member.setAllowLocation(request.getAllowLocation());
-            messages.add(request.getAllowLocation() ? "위치 정보를 허용했습니다." : "위치 정보를 해지했습니다.");
         }
 
-        // 메시지 합치기
-        String finalMessage = messages.isEmpty()
-                ? "변경된 설정이 없습니다."
-                : String.join(" ", messages);
-
-        return finalMessage;
+        return  MemberConverter.toAgreementsDto(member);
     }
 
 

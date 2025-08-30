@@ -28,7 +28,7 @@ public class MemberController {
     @PostMapping("/signup")
     public ApiResponse<String> join(@RequestBody @Valid MemberRequestDto.JoinDto request){
         Member savedMember = memberService.joinMember(request);
-        return ApiResponse.onSuccess("회원가입 성공!");
+        return ApiResponse.onSuccess("회원가입이 완료되었습니다.");
     }
 
     //로그인
@@ -47,12 +47,12 @@ public class MemberController {
 
     //동의 항목 수정
     @PatchMapping("/agreements")
-    public ApiResponse<String> updateAgreements(
+    public ApiResponse<MemberResponseDto.AgreementsDto> updateAgreements(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody MemberRequestDto.AgreementsDto request
     ) {
-        String message = memberService.updateAgreements(userDetails.getId(), request);
-        return ApiResponse.onSuccess(message);
+        MemberResponseDto.AgreementsDto agreementsDto = memberService.updateAgreements(userDetails.getId(), request);
+        return ApiResponse.onSuccess(agreementsDto);
     }
 
 

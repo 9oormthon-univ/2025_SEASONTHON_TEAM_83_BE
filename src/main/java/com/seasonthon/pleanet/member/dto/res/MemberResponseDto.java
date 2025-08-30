@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -28,6 +29,15 @@ public class MemberResponseDto {
     @AllArgsConstructor
     public static class InterestsDto{
         Set<Interest> interests;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AgreementsDto{
+        Boolean allowLocation;
+        Boolean allowPush;
     }
 
 }
