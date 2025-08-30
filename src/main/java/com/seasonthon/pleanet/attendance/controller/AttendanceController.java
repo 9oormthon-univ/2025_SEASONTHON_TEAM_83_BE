@@ -1,6 +1,7 @@
 package com.seasonthon.pleanet.attendance.controller;
 
 import com.seasonthon.pleanet.attendance.domain.Attendance;
+import com.seasonthon.pleanet.attendance.dto.AttendanceCheckResponseDto;
 import com.seasonthon.pleanet.attendance.dto.AttendanceResponseDto;
 import com.seasonthon.pleanet.attendance.service.AttendanceService;
 import com.seasonthon.pleanet.common.config.security.CustomUserDetails;
@@ -35,6 +36,12 @@ public class AttendanceController {
                 .map(a -> new AttendanceResponseDto(a.getAttendanceDate(), true))
                 .collect(Collectors.toList());
 
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/check")
+    public ResponseEntity<AttendanceCheckResponseDto> checkToday(Authentication authentication) {
+        AttendanceCheckResponseDto response = attendanceService.checkToday(authentication);
         return ResponseEntity.ok(response);
     }
 }
