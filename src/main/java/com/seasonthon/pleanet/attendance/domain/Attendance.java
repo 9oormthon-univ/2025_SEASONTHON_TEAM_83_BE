@@ -1,5 +1,6 @@
 package com.seasonthon.pleanet.attendance.domain;
 
+import com.seasonthon.pleanet.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,20 +9,17 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "attendance")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class Attendance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attendanceId;
 
-    private Long userId; // 유저 ID (FK)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     private LocalDate attendanceDate; // 출석 날짜
-
-    private LocalDateTime createdAt; // 생성 일시
 }

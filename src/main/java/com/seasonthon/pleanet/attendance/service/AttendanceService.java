@@ -13,8 +13,8 @@ public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
 
-    public List<Attendance> getMonthlyAttendance(Long userId, int year, int month) {
-        return attendanceRepository.findByUserIdAndYearMonth(userId, year, month);
+    public List<Attendance> getMonthlyAttendance(Long memberId, int year, int month) {
+        return attendanceRepository.findByMemberAndYearMonth(memberId, year, month);
     }
 }
 
