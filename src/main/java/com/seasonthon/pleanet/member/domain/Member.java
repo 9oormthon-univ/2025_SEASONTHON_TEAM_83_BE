@@ -27,7 +27,7 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nickName;
+    private String nickname;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
@@ -61,6 +61,15 @@ public class Member extends BaseEntity {
 
     public void encodePassword(String password) {
         this.password = password;
+    }
+
+    public void setInterests(Set<Interest> newInterests) {
+        if (newInterests == null) {
+            this.interests.clear();
+        } else {
+            this.interests.clear();
+            this.interests.addAll(newInterests);
+        }
     }
 
 

@@ -10,15 +10,21 @@ public class MemberConverter {
     public static MemberResponseDto.LoginDto toLoginDto(Member member, String accessToken){
         return MemberResponseDto.LoginDto.builder()
                 .memberId(member.getId())
-                .nickName((member.getNickName()))
+                .nickname((member.getNickname()))
                 .accessToken(accessToken)
+                .build();
+    }
+
+    public static MemberResponseDto.InterestsDto toInterestsDto(Member member){
+        return MemberResponseDto.InterestsDto.builder()
+                .interests(member.getInterests())
                 .build();
     }
 
     public static Member toMember(MemberRequestDto.JoinDto request){
 
         return Member.builder()
-                .nickName(request.getNickName())
+                .nickname(request.getNickname())
                 .birthday(request.getBirthday())
                 .email(request.getEmail())
                 .socialType(SocialType.LOCAL)

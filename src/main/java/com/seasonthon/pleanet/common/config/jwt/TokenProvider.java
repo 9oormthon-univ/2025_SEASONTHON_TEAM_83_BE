@@ -1,5 +1,6 @@
 package com.seasonthon.pleanet.common.config.jwt;
 
+import com.seasonthon.pleanet.common.config.security.CustomUserDetails;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -59,15 +60,15 @@ public class TokenProvider {
     }
 
     // JWT 토큰에서 사용자 ID를 직접 추출
-    public String getUserIdInToken(String token) {
+    public String getUserEmailInToken(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
 
     // 토큰에서 인증 정보 추출하여 Authentication 객체 생성
     public Authentication getAuthentication(String token) {
-        String userId = String.valueOf(getUserIdInToken(token));
-        UserDetails userDetails = userDetailService.loadUserByUsername(userId);
+        String memberId = getUserEmailInToken(token);
+        CustomUserDetails userDetails = userDetailService.loadUserByUsername(memberId);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

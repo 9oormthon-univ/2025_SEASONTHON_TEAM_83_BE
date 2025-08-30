@@ -10,13 +10,20 @@ public class MemberRequestDto {
 
     @Getter
     public static class JoinDto{
-        String nickName;
+        String nickname;
         LocalDate birthday;
         String email;
         String password;
-        SocialType socialType;
     }
-    public static class AddInterestsDto{
+
+    @Getter
+    public static class loginDto{
+        String emailOrNickname;
+        String password;
+    }
+
+    @Getter
+    public static class InterestsDto{
         Set<Interest> interests;
     }
 }
