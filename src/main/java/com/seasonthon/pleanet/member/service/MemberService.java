@@ -47,8 +47,11 @@ public class MemberService{
        return memberRepository.save(newMember);
     }
 
-    public boolean existsById(Long memberId) {
-        return memberRepository.existsById(memberId);
+    public MemberResponseDto.EmailCheckDto checkEmail(String email) {
+        String normalizedEmail = email.trim().toLowerCase();
+        boolean exists = memberRepository.existsByEmail(normalizedEmail);
+        boolean available = !exists;
+        return MemberConverter.toEmailCheckDto(email, available);
     }
 
     // 카카오 로그인 시 신규 회원가입 또는 기존 회원 조회

@@ -40,4 +40,13 @@ public class MemberResponseDto {
         Boolean allowPush;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmailCheckDto {
+        private String email;     // 요청한 이메일
+        private boolean available; // 사용 가능 여부 (true = 사용 가능)
+    }
+
 }

@@ -31,6 +31,13 @@ public class MemberController {
         return ApiResponse.onSuccess("회원가입이 완료되었습니다.");
     }
 
+    //이메일 중복 체크
+    @PostMapping("/signup/email-check")
+    public ApiResponse<MemberResponseDto.EmailCheckDto> join(@RequestParam("email") String email){
+        MemberResponseDto.EmailCheckDto emailCheckDto = memberService.checkEmail(email);
+        return ApiResponse.onSuccess(emailCheckDto);
+    }
+
     //로그인
     @PostMapping("/login")
     public ApiResponse<MemberResponseDto.LoginDto> login(@RequestBody @Valid MemberRequestDto.LoginDto request ){
@@ -54,6 +61,8 @@ public class MemberController {
         MemberResponseDto.AgreementsDto agreementsDto = memberService.updateAgreements(userDetails.getId(), request);
         return ApiResponse.onSuccess(agreementsDto);
     }
+
+
 
 
 
