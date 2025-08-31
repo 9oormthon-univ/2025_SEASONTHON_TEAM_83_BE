@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     _MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION404","해당 미션은 존재하지 않거나, 삭제되었습니다."),
     _MISSION_ALREADY_IN_PROGRESS(HttpStatus.CONFLICT, "MISSION409", "이미 진행 중인 미션입니다."),
+    _MISSION_ALREADY_TODAY(HttpStatus.CONFLICT, "MISSION410", "이미 미션에 참여하셨습니다. 내일 다시 도전해 주세요!"),
     _MISSION_NOT_GPS(HttpStatus.BAD_REQUEST, "MISSION400", "해당 미션은 GPS 기반 방식이 아닙니다."),
 
     _MEMBER_MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHALLENGE404", "참여 중인 미션을 찾을 수 없습니다."),

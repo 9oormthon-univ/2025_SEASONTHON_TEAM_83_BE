@@ -18,6 +18,8 @@ import net.minidev.json.JSONValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +38,19 @@ public class ChallengeCommandService {
                 memberId, challengeId, ChallengeStatus.IN_PROGRESS
         );
 
+        boolean existsToday = memberChallengeRepository.existsByMemberIdAndChallengeIdAndCreatedAtBetween(
+                memberId,
+                challengeId,
+                LocalDate.now().atStartOfDay(),
+                LocalDate.now().plusDays(1).atStartOfDay()
+        );
+
         if (existsInProgress) {
             throw new GeneralException(ErrorStatus._MISSION_ALREADY_IN_PROGRESS);
+        }
+
+        if (existsToday) {
+            throw new GeneralException(ErrorStatus._MISSION_ALREADY_TODAY);
         }
 
         MemberChallenge mc = MemberChallenge.builder()
