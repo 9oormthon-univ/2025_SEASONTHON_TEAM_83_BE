@@ -32,7 +32,7 @@ public class MemberController {
     }
 
     //이메일 중복 체크
-    @PostMapping("/signup/email-check")
+    @GetMapping("/signup/email-check")
     public ApiResponse<MemberResponseDto.EmailCheckDto> join(@RequestParam("email") String email){
         MemberResponseDto.EmailCheckDto emailCheckDto = memberService.checkEmail(email);
         return ApiResponse.onSuccess(emailCheckDto);
