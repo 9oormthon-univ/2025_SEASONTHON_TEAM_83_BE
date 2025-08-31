@@ -21,7 +21,6 @@ public class MemberConverter {
                 .build();
     }
 
-
     public static MemberResponseDto.AgreementsDto toAgreementsDto(Member member) {
         return MemberResponseDto.AgreementsDto.builder()
                 .allowLocation(member.getAllowLocation())
@@ -30,6 +29,12 @@ public class MemberConverter {
     }
 
 
+    public static MemberResponseDto.EmailCheckDto toEmailCheckDto(String email, Boolean available) {
+        return MemberResponseDto.EmailCheckDto.builder()
+                .email(email)
+                .available(available)
+                .build();
+    }
 
     public static Member toMember(MemberRequestDto.JoinDto request){
 

@@ -47,8 +47,11 @@ public class MemberService{
        return memberRepository.save(newMember);
     }
 
-    public boolean existsById(Long memberId) {
-        return memberRepository.existsById(memberId);
+    public MemberResponseDto.EmailCheckDto checkEmail(String email) {
+        String normalizedEmail = email.trim().toLowerCase();
+        boolean exists = memberRepository.existsByEmail(normalizedEmail);
+        boolean available = !exists;
+        return MemberConverter.toEmailCheckDto(email, available);
     }
 
     // 카카오 로그인 시 신규 회원가입 또는 기존 회원 조회
@@ -79,11 +82,11 @@ public class MemberService{
         if (emailOrNickname.contains("@")) {
             // 이메일인 경우
             member = memberRepository.findByEmail(emailOrNickname)
-                    .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._EMAIL_NOT_FOUND));
         } else {
             // 닉네임인 경우
             member = memberRepository.findByNickname(emailOrNickname)
-                    .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NICKNAME_NOT_FOUND));
         }
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
