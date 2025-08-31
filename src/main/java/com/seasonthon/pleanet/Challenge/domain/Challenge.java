@@ -29,7 +29,7 @@ public class Challenge extends BaseEntity {
 
     private Double requiredDistance;
 
-    private Interest requiredPhotoCount;
+    private Integer requiredPhotoCount;
 
     private Integer rewardPoint;
 
