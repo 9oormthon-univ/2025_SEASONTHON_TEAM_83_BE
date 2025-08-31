@@ -79,11 +79,11 @@ public class MemberService{
         if (emailOrNickname.contains("@")) {
             // 이메일인 경우
             member = memberRepository.findByEmail(emailOrNickname)
-                    .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._EMAIL_NOT_FOUND));
         } else {
             // 닉네임인 경우
             member = memberRepository.findByNickname(emailOrNickname)
-                    .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NICKNAME_NOT_FOUND));
         }
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
