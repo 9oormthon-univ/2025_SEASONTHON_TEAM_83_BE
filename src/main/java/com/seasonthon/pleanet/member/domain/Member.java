@@ -11,7 +11,6 @@ import java.util.Set;
 
 import com.seasonthon.pleanet.member.domain.enums.SocialType;
 import com.seasonthon.pleanet.global.BaseEntity;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -38,10 +37,6 @@ public class Member extends BaseEntity {
     private String email;
 
     private String password;
-
-    @Builder.Default
-    @ColumnDefault("0")
-    private Integer point = 0;
 
     private LocalDate birthday;
 
