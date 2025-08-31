@@ -14,15 +14,17 @@ public enum ErrorStatus implements BaseErrorCode {
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"COMMON401","인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
-    _MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404","유효하지 않은 이메일입니다."),
+    _MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404","존재하지 않는 회원 정보입니다."),
+    _EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER405","유효하지 않은 이메일입니다."),
+    _NICKNAME_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER406","유효하지 않은 이메일입니다."),
     _MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "MEMBER409", "이미 존재하는 이메일입니다."),
     _NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "MEMBER410", "이미 존재하는 닉네임입니다."),
 
     _PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "AUTH401", "비밀번호가 일치하지 않습니다."),
 
-    _MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION404","유효하지 않은 MissionId입니다."),
+    _MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION404","해당 미션은 존재하지 않거나, 삭제되었습니다."),
     _MISSION_ALREADY_IN_PROGRESS(HttpStatus.CONFLICT, "MISSION409", "이미 진행 중인 미션입니다."),
-    _MISSION_NOT_GPS(HttpStatus.BAD_REQUEST, "MISSION400", "GPS 미션이 아닙니다."),
+    _MISSION_NOT_GPS(HttpStatus.BAD_REQUEST, "MISSION400", "해당 미션은 GPS 기반 방식이 아닙니다."),
 
     _MEMBER_MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHALLENGE404", "참여 중인 미션을 찾을 수 없습니다."),
     _MEMBER_MISSION_ALREADY_COMPLETED(HttpStatus.CONFLICT, "CHALLENGE409", "이미 완료된 미션입니다.");
