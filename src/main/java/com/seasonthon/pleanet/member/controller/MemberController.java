@@ -45,6 +45,8 @@ public class MemberController {
         return ApiResponse.onSuccess(loginDto);
     }
 
+
+
     //관심 활동 설정
     @PostMapping("/interests")
     public ApiResponse<MemberResponseDto.InterestsDto> setInterests(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MemberRequestDto.InterestsDto request){
