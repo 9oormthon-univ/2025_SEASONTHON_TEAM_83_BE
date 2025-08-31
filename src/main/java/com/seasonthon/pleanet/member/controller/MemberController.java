@@ -33,7 +33,7 @@ public class MemberController {
 
     //로그인
     @PostMapping("/login")
-    public ApiResponse<MemberResponseDto.LoginDto> login(@RequestBody MemberRequestDto.LoginDto request ){
+    public ApiResponse<MemberResponseDto.LoginDto> login(@RequestBody @Valid MemberRequestDto.LoginDto request ){
         MemberResponseDto.LoginDto loginDto = memberService.login(request.getEmailOrNickname(), request.getPassword());
         return ApiResponse.onSuccess(loginDto);
     }
