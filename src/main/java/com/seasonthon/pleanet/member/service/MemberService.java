@@ -33,7 +33,7 @@ public class MemberService{
 
     public Member joinMember(MemberRequestDto.JoinDto request) {
         if(memberRepository.existsByEmail(request.getEmail())) {
-            throw new GeneralException(ErrorStatus._MEMBER_ALREADY_EXISTS); // 새 에러 상태 추가
+            throw new GeneralException(ErrorStatus._MEMBER_ALREADY_EXISTS);
         }
 
         if(memberRepository.existsByNickname(request.getNickname())) {

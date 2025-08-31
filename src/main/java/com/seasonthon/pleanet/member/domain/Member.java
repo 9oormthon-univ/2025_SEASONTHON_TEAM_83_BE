@@ -11,7 +11,6 @@ import java.util.Set;
 
 import com.seasonthon.pleanet.member.domain.enums.SocialType;
 import com.seasonthon.pleanet.global.BaseEntity;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
