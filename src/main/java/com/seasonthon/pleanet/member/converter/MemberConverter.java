@@ -36,6 +36,16 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDto.MemberRankingDto toMemberRankingDto(Member member, Integer totalPoint, Integer badgeCount) {
+        return MemberResponseDto.MemberRankingDto.builder()
+                .memberId(member.getId())
+                .nickname(member.getNickname())
+                .profileUrl(member.getProfileUrl())
+                .totalPoint(totalPoint)
+                .badgeCount(badgeCount)
+                .build();
+    }
+
     public static Member toMember(MemberRequestDto.JoinDto request){
 
         return Member.builder()

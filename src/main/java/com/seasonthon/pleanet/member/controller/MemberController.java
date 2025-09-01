@@ -1,21 +1,21 @@
 package com.seasonthon.pleanet.member.controller;
 
 import com.seasonthon.pleanet.apiPayload.ApiResponse;
-import com.seasonthon.pleanet.apiPayload.code.status.SuccessStatus;
 import com.seasonthon.pleanet.common.config.security.CustomUserDetails;
-import com.seasonthon.pleanet.member.converter.MemberConverter;
 import com.seasonthon.pleanet.member.domain.Member;
 import com.seasonthon.pleanet.member.dto.req.MemberRequestDto;
 import com.seasonthon.pleanet.member.dto.res.MemberResponseDto;
 import com.seasonthon.pleanet.member.service.MemberService;
+import com.seasonthon.pleanet.member.service.RankingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +23,7 @@ import java.security.Principal;
 public class MemberController {
 
     private final MemberService memberService;
+    private final RankingService rankingService;
 
     //회원가입
     @PostMapping("/signup")
@@ -64,7 +65,10 @@ public class MemberController {
         return ApiResponse.onSuccess(agreementsDto);
     }
 
-
+    @GetMapping("/rankings")
+    public ApiResponse<Page<MemberResponseDto.MemberRankingDto>> getRankings(@PageableDefault(size = 10)Pageable pageable) {
+        return ApiResponse.onSuccess(rankingService.getRanking(pageable));
+    }
 
 
 

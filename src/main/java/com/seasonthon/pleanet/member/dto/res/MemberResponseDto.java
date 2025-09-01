@@ -1,10 +1,7 @@
 package com.seasonthon.pleanet.member.dto.res;
 
 import com.seasonthon.pleanet.member.domain.enums.Interest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,6 +44,20 @@ public class MemberResponseDto {
     public static class EmailCheckDto {
         private String email;     // 요청한 이메일
         private boolean available; // 사용 가능 여부 (true = 사용 가능)
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MemberRankingDto {
+        private Long rank;
+        private Long memberId;
+        private String nickname;
+        private String profileUrl;
+        private Integer totalPoint;
+        private Integer badgeCount;
     }
 
 }
