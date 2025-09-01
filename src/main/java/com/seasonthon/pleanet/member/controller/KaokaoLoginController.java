@@ -16,13 +16,12 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
 public class KaokaoLoginController {
 
     private final KakaoService kakaoService;
     private final MemberService memberService;
 
-    @GetMapping("/callback")
+    @GetMapping("/api/callback")
     public ApiResponse<MemberResponseDto.LoginDto> callback(@RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String accessToken = kakaoService.getAccessTokenFromKakao(code);
 
