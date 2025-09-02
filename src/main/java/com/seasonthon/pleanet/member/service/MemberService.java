@@ -62,7 +62,7 @@ public class MemberService{
                             //.name(userInfo.getKakaoAccount().getProfile().getNickname())
                             .socialId(userInfo.getId())
                             .socialType(SocialType.KAKAO)
-                            //.email(userInfo.getKakaoAccount().getEmail())
+                            .email(userInfo.getKakaoAccount().getEmail())
                             .build();
                     memberRepository.save(newMem);
                     return newMem;
