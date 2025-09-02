@@ -1,5 +1,6 @@
 package com.seasonthon.pleanet.member.dto.res;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.seasonthon.pleanet.member.domain.enums.Interest;
 import lombok.*;
 
@@ -70,4 +71,13 @@ public class MemberResponseDto {
         private String email;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MemberUpdateInfoDto {
+        private String profileUrl;
+        private String nickname;
+        private LocalDate birthday;
+    }
 }

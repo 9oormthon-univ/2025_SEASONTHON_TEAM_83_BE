@@ -45,4 +45,11 @@ public class MemberRequestDto {
         Boolean allowPush;
     }
 
+    @Getter
+    public static class MemberInfoDto{
+        private String profileUrl;
+        private String nickname;
+        private LocalDate birthday;
+    }
+
 }

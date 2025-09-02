@@ -27,6 +27,7 @@ public class RankingService {
     private final PointRepository pointRepository;
     //private final BadgeRepository badgeRepository;
 
+    @Transactional(readOnly = true)
     public Page<MemberResponseDto.MemberRankingDto> getRanking(Pageable pageable) {
         // 1. 멤버 가져오기 (페이징)
         Page<Member> memberPage = memberRepository.findAll(pageable);
