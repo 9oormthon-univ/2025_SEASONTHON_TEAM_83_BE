@@ -121,6 +121,13 @@ public class MemberService{
         return  MemberConverter.toAgreementsDto(member);
     }
 
+    public MemberResponseDto.MemberInfoDto getUserInfo(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+
+        return  MemberConverter.toMemberInfoDto(member);
+    }
+
 
 
 

@@ -46,6 +46,14 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDto.MemberInfoDto toMemberInfoDto(Member member) {
+        return MemberResponseDto.MemberInfoDto.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .profileUrl(member.getProfileUrl())
+                .build();
+    }
+
     public static Member toMember(MemberRequestDto.JoinDto request){
 
         return Member.builder()

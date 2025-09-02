@@ -60,4 +60,14 @@ public class MemberResponseDto {
         private Integer badgeCount;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MemberInfoDto {
+        private String profileUrl;
+        private String nickname;
+        private String email;
+    }
+
 }
