@@ -81,4 +81,9 @@ public class Member extends BaseEntity {
             this.birthday = dto.getBirthday();
         }
     }
+
+    public void unlinkKakao() {
+        this.socialId = null;
+        this.socialType = SocialType.LOCAL;
+    }
 }

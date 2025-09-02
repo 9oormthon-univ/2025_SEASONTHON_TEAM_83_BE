@@ -1,5 +1,7 @@
 package com.seasonthon.pleanet.member.service;
 
+import com.seasonthon.pleanet.badge.repository.BadgeRepository;
+import com.seasonthon.pleanet.badge.repository.MemberBadgeRepository;
 import com.seasonthon.pleanet.member.converter.MemberConverter;
 import com.seasonthon.pleanet.member.domain.Member;
 
@@ -25,7 +27,7 @@ public class RankingService {
 
     private final MemberRepository memberRepository;
     private final PointRepository pointRepository;
-    //private final BadgeRepository badgeRepository;
+    private final MemberBadgeRepository memberBadgeRepository;
 
     @Transactional(readOnly = true)
     public Page<MemberResponseDto.MemberRankingDto> getRanking(Pageable pageable) {
@@ -36,8 +38,7 @@ public class RankingService {
         List<MemberResponseDto.MemberRankingDto> rankingList = memberPage.getContent().stream()
                 .map(member -> {
                     Integer totalPoint = pointRepository.getUserTotalEarnedPoints(member.getId());
-                    //Integer badgeCount = badgeRepository.countByMember(member.getId());
-                    Integer badgeCount =0;
+                    Integer badgeCount = memberBadgeRepository.countByMember_Id(member.getId());
                     return MemberConverter.toMemberRankingDto(member, totalPoint,badgeCount);
                 })
                 // 3. 포인트 많은 순 정렬
