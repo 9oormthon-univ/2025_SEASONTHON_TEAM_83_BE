@@ -19,12 +19,12 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         insertOrUpdate("1km 걷기",
-                "https://example.com/walk1km.png",
+                "/upload/challenge1.png",
                 "최소 1km 이상 보행 시 성공 처리||GPS 기반으로 사용자의 이동 경로 기록",
                 ChallengeType.GPS, 1.0, null, 20);
 
         insertOrUpdate("텀블러 사용 챌린지",
-                "https://example.com/photo.png",
+                "/upload/challenge2.png",
                 "테이크아웃 또는 매장에서 음료를 받을 때||카페 영수증 + 텀블러 사진 제출 (1회 주문당 1회 인정)",
                 ChallengeType.PHOTO, null, 2, 50);
     }

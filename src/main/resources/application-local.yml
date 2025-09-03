@@ -8,12 +8,12 @@ spring:
     init:
       mode: never
   jpa:
+    hibernate:
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
         format_sql: true
         use_sql_comments: true
-        hbm2ddl:
-          auto: update
         default_batch_fetch_size: 1000

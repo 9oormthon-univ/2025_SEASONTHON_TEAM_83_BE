@@ -46,6 +46,7 @@ public class MemberConverter {
                 .build();
     }
 
+
     public static Member toMember(MemberRequestDto.JoinDto request){
 
         return Member.builder()
