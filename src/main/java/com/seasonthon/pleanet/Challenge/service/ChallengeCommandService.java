@@ -7,6 +7,7 @@ import com.seasonthon.pleanet.Challenge.domain.ChallengeType;
 import com.seasonthon.pleanet.Challenge.domain.MemberChallenge;
 import com.seasonthon.pleanet.Challenge.dto.req.ChallengeRequestDto;
 import com.seasonthon.pleanet.Challenge.dto.res.ChallengeResponseDto;
+import com.seasonthon.pleanet.Challenge.dto.res.PhotoResponse;
 import com.seasonthon.pleanet.Challenge.repository.ChallengeRepository;
 import com.seasonthon.pleanet.Challenge.repository.MemberChallengeRepository;
 import com.seasonthon.pleanet.apiPayload.code.status.ErrorStatus;
@@ -15,8 +16,14 @@ import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDate;
 
@@ -28,6 +35,10 @@ public class ChallengeCommandService {
 
     private final MemberChallengeRepository memberChallengeRepository;
     private final  ChallengeRepository challengeRepository;
+    private final S3Client s3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     public ChallengeResponseDto.ChallengeStartDto startMission(Long memberId, Long challengeId) {
 
@@ -101,6 +112,50 @@ public class ChallengeCommandService {
         return ChallengeConverter.toGpsDto(totalDistance,requiredDistance,remainingDistance,path.size(),mc.getStatus());
 
     }
+
+    @Transactional
+    public PhotoResponse uploadPhoto(Long memberChallengeId, MultipartFile file) {
+        MemberChallenge mc = memberChallengeRepository.findById(memberChallengeId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
+
+        // PHOTO 챌린지만 업로드 가능
+        if (mc.getChallenge().getType() != ChallengeType.PHOTO) {
+            throw new GeneralException(ErrorStatus._MISSION_NOT_PHOTO);
+        }
+
+        try {
+            // S3에 업로드할 key 구성
+            String key = "challenges/" + mc.getChallenge().getId() + "/"
+                    + mc.getMemberId() + "_" + System.currentTimeMillis()
+                    + "_" + file.getOriginalFilename();
+
+            // S3 업로드
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .contentType(file.getContentType())
+                    .build();
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+
+            String photoUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + key;
+
+            // extraData 업데이트
+            JSONObject extra = (JSONObject) JSONValue.parse(mc.getExtraData());
+            if (extra == null) extra = new JSONObject();
+            extra.put("photoUrl", photoUrl);
+            extra.put("uploadedAt", LocalDate.now().toString());
+
+            mc.setExtraData(extra.toString());
+            memberChallengeRepository.save(mc);
+
+            return new PhotoResponse(photoUrl, true);
+
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
+        }
+    }
+
 
     //path 배열을 순회하며 거리 합계 계산 (km)
     private double calculateDistance(net.minidev.json.JSONArray path) {

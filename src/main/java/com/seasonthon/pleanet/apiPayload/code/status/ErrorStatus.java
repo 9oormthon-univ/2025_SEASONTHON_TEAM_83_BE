@@ -31,7 +31,11 @@ public enum ErrorStatus implements BaseErrorCode {
     _MEMBER_MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHALLENGE404", "참여 중인 미션을 찾을 수 없습니다."),
     _MEMBER_MISSION_ALREADY_COMPLETED(HttpStatus.CONFLICT, "CHALLENGE409", "이미 완료된 미션입니다."),
 
-    _SEARCH_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "SEARCH404", "검색 기록을 찾을 수 없습니다.");
+    _SEARCH_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "SEARCH404", "검색 기록을 찾을 수 없습니다."),
+
+    _MISSION_NOT_PHOTO(HttpStatus.BAD_REQUEST, "MISSION411", "이 미션은 사진 인증 미션이 아닙니다."),
+    _UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "UPLOAD500", "사진 업로드에 실패했습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
@@ -42,7 +46,7 @@ public enum ErrorStatus implements BaseErrorCode {
         return ErrorReasonDto.builder()
                 .message(message)
                 .code(code)
-                .isSuccess(true)
+                .isSuccess(false)
                 .httpStatus(httpStatus)
                 .build()
                 ;
