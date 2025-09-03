@@ -51,4 +51,10 @@ public class ChallengeConverter {
                 .description(challenge.getDescription())
                 .build();
     }
+    public static ChallengeResponseDto.ChallengeCompleteDto toChallengeCompleteDto(Integer rewardPoint) {
+        return ChallengeResponseDto.ChallengeCompleteDto.builder()
+                .rewardPoint(rewardPoint)
+                .endedAt(LocalDateTime.now())
+                .build();
+    }
 }

@@ -47,4 +47,10 @@ public class ChallengeController {
     public ApiResponse<ChallengeResponseDto.ChallengeDetailDto> getMissionDetail(@PathVariable Long challengeId) {
         return ApiResponse.onSuccess(challengeQueryService.getMissionDetail(challengeId));
     }
+
+    //미션 완료
+    @PostMapping("/{challengeId}/complete")
+    public ApiResponse<ChallengeResponseDto.ChallengeCompleteDto> missionComplete(@PathVariable Long challengeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(challengeCommandService.missionComplete(challengeId, userDetails.getId()));
+    }
 }

@@ -54,6 +54,17 @@ public class ChallengeResponseDto {
         private String description;
     }
 
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChallengeCompleteDto {
+        private Integer rewardPoint;
+        private LocalDateTime endedAt;
+
+    }
+
 
 
 
