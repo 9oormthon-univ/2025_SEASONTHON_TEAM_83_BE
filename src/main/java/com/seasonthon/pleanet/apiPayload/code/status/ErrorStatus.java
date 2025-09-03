@@ -34,8 +34,8 @@ public enum ErrorStatus implements BaseErrorCode {
     _SEARCH_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "SEARCH404", "검색 기록을 찾을 수 없습니다."),
 
     _MISSION_NOT_PHOTO(HttpStatus.BAD_REQUEST, "MISSION411", "이 미션은 사진 인증 미션이 아닙니다."),
-    _UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "UPLOAD500", "사진 업로드에 실패했습니다.");
-
+    _UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "UPLOAD500", "사진 업로드 실패했습니다."),
+    _VERIFICATION_FAIL(HttpStatus.BAD_REQUEST, "VERIFY400", "사진 검증에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
