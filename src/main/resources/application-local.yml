@@ -26,3 +26,6 @@ cloud:
       static: ap-northeast-2   # 서울 리전
     stack:
       auto: false
+
+openai:
+  api-key: ${OPENAI_API_KEY}

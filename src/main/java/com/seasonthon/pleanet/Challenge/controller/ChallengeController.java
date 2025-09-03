@@ -3,6 +3,7 @@ package com.seasonthon.pleanet.Challenge.controller;
 import com.seasonthon.pleanet.Challenge.dto.req.ChallengeRequestDto;
 import com.seasonthon.pleanet.Challenge.dto.res.ChallengeResponseDto;
 import com.seasonthon.pleanet.Challenge.dto.res.PhotoResponse;
+import com.seasonthon.pleanet.Challenge.dto.res.VerifyResponse;
 import com.seasonthon.pleanet.Challenge.service.ChallengeCommandService;
 import com.seasonthon.pleanet.Challenge.service.ChallengeQueryService;
 import com.seasonthon.pleanet.apiPayload.ApiResponse;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,5 +57,13 @@ public class ChallengeController {
             @PathVariable Long memberChallengeId,
             @RequestParam("file") MultipartFile file) {
         return ApiResponse.onSuccess(challengeCommandService.uploadPhoto(memberChallengeId, file));
+    }
+
+    // 사진 인증 검증 API
+    @PostMapping("/{memberChallengeId}/verify")
+    public ApiResponse<VerifyResponse> verifyPhoto(
+            @PathVariable Long memberChallengeId) {
+        VerifyResponse response = challengeCommandService.verifyPhoto(memberChallengeId);
+        return ApiResponse.onSuccess(response);
     }
 }

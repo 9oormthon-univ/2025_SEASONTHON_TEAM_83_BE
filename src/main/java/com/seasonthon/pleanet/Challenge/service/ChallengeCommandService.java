@@ -1,5 +1,6 @@
 package com.seasonthon.pleanet.Challenge.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seasonthon.pleanet.Challenge.converter.ChallengeConverter;
 import com.seasonthon.pleanet.Challenge.domain.Challenge;
 import com.seasonthon.pleanet.Challenge.domain.ChallengeStatus;
@@ -8,8 +9,10 @@ import com.seasonthon.pleanet.Challenge.domain.MemberChallenge;
 import com.seasonthon.pleanet.Challenge.dto.req.ChallengeRequestDto;
 import com.seasonthon.pleanet.Challenge.dto.res.ChallengeResponseDto;
 import com.seasonthon.pleanet.Challenge.dto.res.PhotoResponse;
+import com.seasonthon.pleanet.Challenge.dto.res.VerifyResponse;
 import com.seasonthon.pleanet.Challenge.repository.ChallengeRepository;
 import com.seasonthon.pleanet.Challenge.repository.MemberChallengeRepository;
+import com.seasonthon.pleanet.Challenge.service.openai.ChatGptVisionService;
 import com.seasonthon.pleanet.apiPayload.code.status.ErrorStatus;
 import com.seasonthon.pleanet.apiPayload.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 
 @Service
@@ -36,6 +40,8 @@ public class ChallengeCommandService {
     private final MemberChallengeRepository memberChallengeRepository;
     private final  ChallengeRepository challengeRepository;
     private final S3Client s3Client;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ChatGptVisionService chatGptVisionService;  // ChatGPT Vision 서비스 주입
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -156,6 +162,55 @@ public class ChallengeCommandService {
         }
     }
 
+    // 사진 인증 검증 (ChatGPT Vision API)
+    @Transactional
+    public VerifyResponse verifyPhoto(Long memberChallengeId) {
+        MemberChallenge mc = memberChallengeRepository.findById(memberChallengeId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
+
+        // 미션 타입 확인
+        if (mc.getChallenge().getType() != ChallengeType.PHOTO) {
+            throw new GeneralException(ErrorStatus._MISSION_NOT_PHOTO);
+        }
+
+        try {
+            // extraData에서 photoUrl 가져오기
+            Map<String, Object> extra = objectMapper.readValue(mc.getExtraData(), Map.class);
+            String photoUrl = (String) extra.get("photoUrl");
+
+            if (photoUrl == null) {
+                throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
+            }
+
+            // ChatGPT Vision API 호출
+            boolean verificationSuccess = chatGptVisionService.verifyTumbler(photoUrl);
+
+            String message;
+            int reward = 0;
+
+            if (verificationSuccess) {
+                mc.setStatus(ChallengeStatus.SUCCESS);
+                mc.setRewardGranted(true);
+                reward = 50; // ⭐️ 포인트 지급 로직 연결 필요
+                message = "챌린지 성공! +50P 지급";
+            } else {
+                mc.setStatus(ChallengeStatus.FAIL);
+                mc.setRewardGranted(false);
+                message = "인증 실패, 재촬영 필요";
+            }
+
+            // extraData 업데이트
+            extra.put("verified", verificationSuccess);
+            mc.setExtraData(objectMapper.writeValueAsString(extra));
+
+            memberChallengeRepository.save(mc);
+
+            return new VerifyResponse(verificationSuccess, reward, message);
+
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
+        }
+    }
 
     //path 배열을 순회하며 거리 합계 계산 (km)
     private double calculateDistance(net.minidev.json.JSONArray path) {
@@ -186,7 +241,4 @@ public class ChallengeCommandService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
-
-
-
 }
