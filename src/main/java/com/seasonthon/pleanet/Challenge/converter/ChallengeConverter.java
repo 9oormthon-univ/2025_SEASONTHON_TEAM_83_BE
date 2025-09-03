@@ -13,7 +13,6 @@ public class ChallengeConverter {
 
     public static ChallengeResponseDto.ChallengeStartDto toChallengeStartDto(MemberChallenge memberChallenge) {
         return ChallengeResponseDto.ChallengeStartDto.builder()
-                .memberChallengeId(memberChallenge.getId())
                 .missionStatus(memberChallenge.getStatus())
                 .startedAt(LocalDateTime.now())
                 .build();

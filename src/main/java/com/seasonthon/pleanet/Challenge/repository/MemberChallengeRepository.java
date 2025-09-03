@@ -26,4 +26,6 @@ public interface MemberChallengeRepository extends JpaRepository<MemberChallenge
             LocalDateTime end
     );
 
+    Optional<MemberChallenge> findByChallenge_Id(Long challengeId);
+
 }

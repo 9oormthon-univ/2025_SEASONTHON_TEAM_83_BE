@@ -73,10 +73,15 @@ public class ChallengeCommandService {
         return ChallengeConverter.toChallengeStartDto(mc);
     }
 
-    public ChallengeResponseDto.GpsDto updateProgress(Long memberChallengeId, ChallengeRequestDto.GpsDto request) {
+    public ChallengeResponseDto.GpsDto updateProgress(Long challengeId, Long memberId, ChallengeRequestDto.GpsDto request) {
 
-        MemberChallenge mc = memberChallengeRepository.findById(memberChallengeId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
+        MemberChallenge mc = memberChallengeRepository
+                .findByMemberIdAndChallengeIdAndCreatedAtBetween(
+                        memberId,
+                        challengeId,
+                        LocalDate.now().atStartOfDay(),
+                        LocalDate.now().plusDays(1).atStartOfDay()
+                ).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
 
         // 미션 타입 체크
         if (mc.getChallenge().getType() != ChallengeType.GPS) {

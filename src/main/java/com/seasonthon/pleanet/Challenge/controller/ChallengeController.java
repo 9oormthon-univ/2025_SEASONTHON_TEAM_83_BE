@@ -30,9 +30,9 @@ public class ChallengeController {
     }
 
     //gps 정보 받기
-    @PostMapping("/{memberChallengeId}/gps")
-    public ApiResponse<ChallengeResponseDto.GpsDto> updateProgress(@PathVariable Long memberChallengeId, @RequestBody ChallengeRequestDto.GpsDto request) {
-        ChallengeResponseDto.GpsDto gpsDto = challengeCommandService.updateProgress(memberChallengeId, request);
+    @PostMapping("/{challengeId}/gps")
+    public ApiResponse<ChallengeResponseDto.GpsDto> updateProgress(@PathVariable Long challengeId, @AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChallengeRequestDto.GpsDto request) {
+        ChallengeResponseDto.GpsDto gpsDto = challengeCommandService.updateProgress(challengeId, userDetails.getId(),request);
         return ApiResponse.onSuccess(gpsDto);
     }
 

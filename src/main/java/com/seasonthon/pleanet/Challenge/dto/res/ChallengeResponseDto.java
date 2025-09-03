@@ -12,7 +12,6 @@ public class ChallengeResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ChallengeStartDto {
-        private Long memberChallengeId;
         private ChallengeStatus missionStatus;
         private LocalDateTime startedAt;
     }
