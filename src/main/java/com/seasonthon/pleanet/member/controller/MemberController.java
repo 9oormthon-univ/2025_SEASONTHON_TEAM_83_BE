@@ -1,21 +1,21 @@
 package com.seasonthon.pleanet.member.controller;
 
 import com.seasonthon.pleanet.apiPayload.ApiResponse;
-import com.seasonthon.pleanet.apiPayload.code.status.SuccessStatus;
 import com.seasonthon.pleanet.common.config.security.CustomUserDetails;
-import com.seasonthon.pleanet.member.converter.MemberConverter;
 import com.seasonthon.pleanet.member.domain.Member;
 import com.seasonthon.pleanet.member.dto.req.MemberRequestDto;
 import com.seasonthon.pleanet.member.dto.res.MemberResponseDto;
 import com.seasonthon.pleanet.member.service.MemberService;
+import com.seasonthon.pleanet.member.service.RankingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +23,7 @@ import java.security.Principal;
 public class MemberController {
 
     private final MemberService memberService;
+    private final RankingService rankingService;
 
     //회원가입
     @PostMapping("/signup")
@@ -32,7 +33,7 @@ public class MemberController {
     }
 
     //이메일 중복 체크
-    @GetMapping("/signup/email-check")
+    @GetMapping("/email-check")
     public ApiResponse<MemberResponseDto.EmailCheckDto> join(@RequestParam("email") String email){
         MemberResponseDto.EmailCheckDto emailCheckDto = memberService.checkEmail(email);
         return ApiResponse.onSuccess(emailCheckDto);
@@ -44,6 +45,8 @@ public class MemberController {
         MemberResponseDto.LoginDto loginDto = memberService.login(request.getEmailOrNickname(), request.getPassword());
         return ApiResponse.onSuccess(loginDto);
     }
+
+
 
     //관심 활동 설정
     @PostMapping("/interests")
@@ -62,7 +65,23 @@ public class MemberController {
         return ApiResponse.onSuccess(agreementsDto);
     }
 
+    @GetMapping("/rankings")
+    public ApiResponse<Page<MemberResponseDto.MemberRankingDto>> getRankings(@PageableDefault(size = 10)Pageable pageable) {
+        return ApiResponse.onSuccess(rankingService.getRanking(pageable));
+    }
 
+    //유저 정보 가져오기
+    @GetMapping("/me")
+    public ApiResponse<MemberResponseDto.MemberInfoDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(memberService.getUserInfo(userDetails.getId()));
+    }
+
+    //유저 정보 수정하기
+    @PatchMapping("/me")
+    public ApiResponse<MemberResponseDto.MemberUpdateInfoDto> updateUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                       @RequestBody MemberRequestDto.MemberInfoDto request) {
+        return ApiResponse.onSuccess(memberService.updateUserInfo(userDetails.getId(), request));
+    }
 
 
 

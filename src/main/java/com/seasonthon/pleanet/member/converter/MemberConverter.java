@@ -36,6 +36,32 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDto.MemberRankingDto toMemberRankingDto(Member member, Integer totalPoint, Integer badgeCount) {
+        return MemberResponseDto.MemberRankingDto.builder()
+                .memberId(member.getId())
+                .nickname(member.getNickname())
+                .profileUrl(member.getProfileUrl())
+                .totalPoint(totalPoint)
+                .badgeCount(badgeCount)
+                .build();
+    }
+
+    public static MemberResponseDto.MemberInfoDto toMemberInfoDto(Member member) {
+        return MemberResponseDto.MemberInfoDto.builder()
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .profileUrl(member.getProfileUrl())
+                .build();
+    }
+
+    public static MemberResponseDto.MemberUpdateInfoDto toMemberUpdateInfoDto(Member member) {
+        return MemberResponseDto.MemberUpdateInfoDto.builder()
+                .nickname(member.getNickname())
+                .profileUrl(member.getProfileUrl())
+                .birthday(member.getBirthday())
+                .build();
+    }
+
     public static Member toMember(MemberRequestDto.JoinDto request){
 
         return Member.builder()
