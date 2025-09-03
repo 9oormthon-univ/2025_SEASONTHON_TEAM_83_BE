@@ -1,10 +1,7 @@
 package com.seasonthon.pleanet.Challenge.dto.res;
 
 import com.seasonthon.pleanet.Challenge.domain.ChallengeStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +27,31 @@ public class ChallengeResponseDto {
         private double remainingDistance;
         private int pathCount;
         private ChallengeStatus status;
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChallengeListDto {
+        private Long challengeId;
+        private String title;
+        private String imageUrl;
+        private Integer point;
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChallengeDetailDto {
+        private Long challengeId;
+        private String title;
+        private String imageUrl;
+        private Integer point;
+        private String description;
     }
 
 
