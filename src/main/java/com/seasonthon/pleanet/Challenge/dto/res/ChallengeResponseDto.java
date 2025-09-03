@@ -41,6 +41,19 @@ public class ChallengeResponseDto {
         private Integer point;
     }
 
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChallengeDetailDto {
+        private Long challengeId;
+        private String title;
+        private String imageUrl;
+        private Integer point;
+        private String description;
+    }
+
 
 
 

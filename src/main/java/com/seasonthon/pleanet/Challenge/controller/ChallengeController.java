@@ -38,7 +38,13 @@ public class ChallengeController {
 
     //미션 리스트 조회
     @GetMapping("")
-    public ApiResponse<Page<ChallengeResponseDto.ChallengeListDto>> getRankings(@PageableDefault(size = 2) Pageable pageable) {
+    public ApiResponse<Page<ChallengeResponseDto.ChallengeListDto>> getMisiions(@PageableDefault(size = 2) Pageable pageable) {
         return ApiResponse.onSuccess(challengeQueryService.getMissions(pageable));
+    }
+
+    //세부 미션 조회
+    @GetMapping("{challengeId}")
+    public ApiResponse<ChallengeResponseDto.ChallengeDetailDto> getMissionDetail(@PathVariable Long challengeId) {
+        return ApiResponse.onSuccess(challengeQueryService.getMissionDetail(challengeId));
     }
 }

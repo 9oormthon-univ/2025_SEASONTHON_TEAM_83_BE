@@ -41,4 +41,14 @@ public class ChallengeConverter {
                 .title(challenge.getTitle())
                 .build();
     }
+
+    public static ChallengeResponseDto.ChallengeDetailDto toChallengeDetailDto(Challenge challenge) {
+        return ChallengeResponseDto.ChallengeDetailDto.builder()
+                .challengeId(challenge.getId())
+                .imageUrl(challenge.getImageUrl())
+                .point(challenge.getRewardPoint())
+                .title(challenge.getTitle())
+                .description(challenge.getDescription())
+                .build();
+    }
 }
