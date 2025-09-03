@@ -1,6 +1,8 @@
 package com.seasonthon.pleanet.member.domain;
 
 import com.seasonthon.pleanet.member.domain.enums.Interest;
+import com.seasonthon.pleanet.member.dto.req.MemberRequestDto;
+import com.seasonthon.pleanet.member.dto.res.MemberResponseDto;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -68,5 +70,20 @@ public class Member extends BaseEntity {
         }
     }
 
+    public void update(MemberRequestDto.MemberInfoDto dto) {
+        if (dto.getProfileUrl() != null) {
+            this.profileUrl = dto.getProfileUrl();
+        }
+        if (dto.getNickname() != null) {
+            this.nickname = dto.getNickname();
+        }
+        if(dto.getBirthday() != null) {
+            this.birthday = dto.getBirthday();
+        }
+    }
 
+    public void unlinkKakao() {
+        this.socialId = null;
+        this.socialType = SocialType.LOCAL;
+    }
 }

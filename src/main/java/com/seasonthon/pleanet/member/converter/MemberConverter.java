@@ -46,6 +46,22 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDto.MemberInfoDto toMemberInfoDto(Member member) {
+        return MemberResponseDto.MemberInfoDto.builder()
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .profileUrl(member.getProfileUrl())
+                .build();
+    }
+
+    public static MemberResponseDto.MemberUpdateInfoDto toMemberUpdateInfoDto(Member member) {
+        return MemberResponseDto.MemberUpdateInfoDto.builder()
+                .nickname(member.getNickname())
+                .profileUrl(member.getProfileUrl())
+                .birthday(member.getBirthday())
+                .build();
+    }
+
     public static Member toMember(MemberRequestDto.JoinDto request){
 
         return Member.builder()
