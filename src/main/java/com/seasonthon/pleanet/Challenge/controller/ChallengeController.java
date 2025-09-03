@@ -2,6 +2,7 @@ package com.seasonthon.pleanet.Challenge.controller;
 
 import com.seasonthon.pleanet.Challenge.dto.req.ChallengeRequestDto;
 import com.seasonthon.pleanet.Challenge.dto.res.ChallengeResponseDto;
+import com.seasonthon.pleanet.Challenge.dto.res.PhotoResponse;
 import com.seasonthon.pleanet.Challenge.service.ChallengeCommandService;
 import com.seasonthon.pleanet.Challenge.service.ChallengeQueryService;
 import com.seasonthon.pleanet.apiPayload.ApiResponse;
@@ -11,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,5 +49,13 @@ public class ChallengeController {
     @GetMapping("{challengeId}")
     public ApiResponse<ChallengeResponseDto.ChallengeDetailDto> getMissionDetail(@PathVariable Long challengeId) {
         return ApiResponse.onSuccess(challengeQueryService.getMissionDetail(challengeId));
+    }
+
+    // 인증 사진 업로드
+    @PostMapping("/{memberChallengeId}/photo")
+    public ApiResponse<PhotoResponse> uploadPhoto(
+            @PathVariable Long memberChallengeId,
+            @RequestParam("file") MultipartFile file) {
+        return ApiResponse.onSuccess(challengeCommandService.uploadPhoto(memberChallengeId, file));
     }
 }
