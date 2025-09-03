@@ -32,21 +32,17 @@ public class MemberService{
     private final TokenProvider tokenProvider;
 
     public Member joinMember(MemberRequestDto.JoinDto request) {
-        if(memberRepository.existsByEmail(request.getEmail())) {
-            throw new GeneralException(ErrorStatus._MEMBER_ALREADY_EXISTS);
-        }
 
-        if(memberRepository.existsByNickname(request.getNickname())) {
-            throw new GeneralException(ErrorStatus._NICKNAME_ALREADY_EXISTS);
-        }
+        validateNicknameForSignup(request.getEmail(),request.getNickname());
 
-        Member newMember = MemberConverter.toMember(request); //컨버터 위치
+        Member newMember = MemberConverter.toMember(request);
 
         newMember.encodePassword(passwordEncoder.encode(request.getPassword()));
 
        return memberRepository.save(newMember);
     }
 
+    @Transactional(readOnly = true)
     public MemberResponseDto.EmailCheckDto checkEmail(String email) {
         String normalizedEmail = email.trim().toLowerCase();
         boolean exists = memberRepository.existsByEmail(normalizedEmail);
@@ -119,6 +115,58 @@ public class MemberService{
         }
 
         return  MemberConverter.toAgreementsDto(member);
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResponseDto.MemberInfoDto getUserInfo(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+
+        return  MemberConverter.toMemberInfoDto(member);
+    }
+
+    public MemberResponseDto.MemberUpdateInfoDto updateUserInfo(Long memberId, MemberRequestDto.MemberInfoDto request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+
+        if (request.getNickname() != null) {
+            validateNicknameForUpdate(request.getNickname(), member.getId());
+        }
+        member.update(request);
+        return  MemberConverter.toMemberUpdateInfoDto(member);
+    }
+
+    //유저 정보 업데이트 시 닉네임 유효성 검사 로직
+    private void validateNicknameForUpdate(String nickname, Long memberId) {
+        if (memberRepository.existsByNicknameAndIdNot(nickname, memberId)) {
+            throw new GeneralException(ErrorStatus._NICKNAME_ALREADY_EXISTS);
+        }
+
+        if (containsForbiddenWords(nickname)) {
+            throw new GeneralException(ErrorStatus._NICKNAME_FORBIDDEN);
+        }
+    }
+
+    //닉네임 유효성 검사 로직
+    private void validateNicknameForSignup(String email, String nickname) {
+        if(memberRepository.existsByEmail(email)) {
+            throw new GeneralException(ErrorStatus._MEMBER_ALREADY_EXISTS);
+        }
+
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new GeneralException(ErrorStatus._NICKNAME_ALREADY_EXISTS);
+        }
+
+        if (containsForbiddenWords(nickname)) {
+            throw new GeneralException(ErrorStatus._NICKNAME_FORBIDDEN);
+        }
+    }
+
+    //닉네임 금칙어 제한 로직
+    private boolean containsForbiddenWords(String nickname) {
+
+        List<String> forbiddenWords = List.of( "fuck","shit","bastard","sex","시발","병신","개새끼","썅");
+        return forbiddenWords.stream().anyMatch(nickname::contains);
     }
 
 

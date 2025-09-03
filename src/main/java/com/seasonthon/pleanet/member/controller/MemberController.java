@@ -70,6 +70,19 @@ public class MemberController {
         return ApiResponse.onSuccess(rankingService.getRanking(pageable));
     }
 
+    //유저 정보 가져오기
+    @GetMapping("/me")
+    public ApiResponse<MemberResponseDto.MemberInfoDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(memberService.getUserInfo(userDetails.getId()));
+    }
+
+    //유저 정보 수정하기
+    @PatchMapping("/me")
+    public ApiResponse<MemberResponseDto.MemberUpdateInfoDto> updateUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                       @RequestBody MemberRequestDto.MemberInfoDto request) {
+        return ApiResponse.onSuccess(memberService.updateUserInfo(userDetails.getId(), request));
+    }
+
 
 
 }
