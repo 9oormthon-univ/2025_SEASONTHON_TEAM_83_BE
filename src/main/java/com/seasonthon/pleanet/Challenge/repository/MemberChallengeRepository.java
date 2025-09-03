@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberChallengeRepository extends JpaRepository<MemberChallenge, Long> {
     boolean existsByMemberIdAndChallengeIdAndStatus(Long memberId, Long challengeId, ChallengeStatus status);
-
 }
