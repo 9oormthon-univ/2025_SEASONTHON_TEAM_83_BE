@@ -60,10 +60,10 @@ public class ChallengeController {
     }
 
     // 사진 인증 검증 API
-    @PostMapping("/{memberChallengeId}/verify")
+    @PostMapping("/{challengeId}/verify")
     public ApiResponse<VerifyResponse> verifyPhoto(
-            @PathVariable Long memberChallengeId) {
-        VerifyResponse response = challengeCommandService.verifyPhoto(memberChallengeId);
+            @PathVariable Long challengeId ,@AuthenticationPrincipal CustomUserDetails userDetails) {
+        VerifyResponse response = challengeCommandService.verifyPhoto(challengeId, userDetails.getId());
         return ApiResponse.onSuccess(response);
     }
 
