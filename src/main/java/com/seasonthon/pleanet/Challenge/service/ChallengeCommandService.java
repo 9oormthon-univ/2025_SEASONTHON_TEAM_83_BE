@@ -136,9 +136,14 @@ public class ChallengeCommandService {
     }
 
     @Transactional
-    public PhotoResponse uploadPhoto(Long memberChallengeId, MultipartFile file) {
-        MemberChallenge mc = memberChallengeRepository.findById(memberChallengeId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
+    public PhotoResponse uploadPhoto(Long challengeId, MultipartFile file, Long memberId) {
+        MemberChallenge mc = memberChallengeRepository
+                .findByMemberIdAndChallengeIdAndCreatedAtBetween(
+                        memberId,
+                        challengeId,
+                        LocalDate.now().atStartOfDay(),
+                        LocalDate.now().plusDays(1).atStartOfDay()
+                ).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
 
         // PHOTO 챌린지만 업로드 가능
         if (mc.getChallenge().getType() != ChallengeType.PHOTO) {
