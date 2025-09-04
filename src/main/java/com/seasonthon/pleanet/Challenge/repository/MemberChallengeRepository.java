@@ -25,4 +25,7 @@ public interface MemberChallengeRepository extends JpaRepository<MemberChallenge
             LocalDateTime start,
             LocalDateTime end
     );
+
+    // 사용자의 가장 최근 참여 챌린지 조회 (생성일 내림차순 기준)
+    Optional<MemberChallenge> findTopByMemberIdOrderByCreatedAtDesc(Long memberId);
 }
