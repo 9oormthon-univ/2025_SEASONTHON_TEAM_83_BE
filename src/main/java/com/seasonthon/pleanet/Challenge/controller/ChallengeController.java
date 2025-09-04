@@ -52,11 +52,12 @@ public class ChallengeController {
     }
 
     // 인증 사진 업로드
-    @PostMapping("/{memberChallengeId}/photo")
+    @PostMapping("/{challengeId}/photo")
     public ApiResponse<PhotoResponse> uploadPhoto(
-            @PathVariable Long memberChallengeId,
-            @RequestParam("file") MultipartFile file) {
-        return ApiResponse.onSuccess(challengeCommandService.uploadPhoto(memberChallengeId, file));
+            @PathVariable Long challengeId,
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(challengeCommandService.uploadPhoto(challengeId, file,userDetails.getId()));
     }
 
     // 사진 인증 검증 API
