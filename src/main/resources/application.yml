@@ -5,7 +5,7 @@ spring:
       max-file-size: 200MB
       max-request-size: 300MB
   profiles:
-    active: deploy
+    active: local
 
 jwt:
   issuer: ajufresh@gmail.com
@@ -24,6 +24,9 @@ cloud:
       static: ap-northeast-2   # 서울 리전
     stack:
       auto: false
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
 
 openai:
   api-key: ${OPENAI_API_KEY}
