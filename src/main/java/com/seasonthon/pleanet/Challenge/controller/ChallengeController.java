@@ -33,9 +33,9 @@ public class ChallengeController {
     }
 
     //gps 정보 받기
-    @PostMapping("/{memberChallengeId}/gps")
-    public ApiResponse<ChallengeResponseDto.GpsDto> updateProgress(@PathVariable Long memberChallengeId, @RequestBody ChallengeRequestDto.GpsDto request) {
-        ChallengeResponseDto.GpsDto gpsDto = challengeCommandService.updateProgress(memberChallengeId, request);
+    @PostMapping("/{challengeId}/gps")
+    public ApiResponse<ChallengeResponseDto.GpsDto> updateProgress(@PathVariable Long challengeId, @AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChallengeRequestDto.GpsDto request) {
+        ChallengeResponseDto.GpsDto gpsDto = challengeCommandService.updateProgress(challengeId, userDetails.getId(),request);
         return ApiResponse.onSuccess(gpsDto);
     }
 
@@ -65,5 +65,11 @@ public class ChallengeController {
             @PathVariable Long memberChallengeId) {
         VerifyResponse response = challengeCommandService.verifyPhoto(memberChallengeId);
         return ApiResponse.onSuccess(response);
+    }
+
+    //미션 완료
+    @PostMapping("/{challengeId}/complete")
+    public ApiResponse<ChallengeResponseDto.ChallengeCompleteDto> missionComplete(@PathVariable Long challengeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(challengeCommandService.missionComplete(challengeId, userDetails.getId()));
     }
 }

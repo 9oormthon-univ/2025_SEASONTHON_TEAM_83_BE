@@ -35,8 +35,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     _MISSION_NOT_PHOTO(HttpStatus.BAD_REQUEST, "MISSION411", "이 미션은 사진 인증 미션이 아닙니다."),
     _UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "UPLOAD500", "사진 업로드 실패했습니다."),
-    _VERIFICATION_FAIL(HttpStatus.BAD_REQUEST, "VERIFY400", "사진 검증에 실패했습니다.");
+    _VERIFICATION_FAIL(HttpStatus.BAD_REQUEST, "VERIFY400", "사진 검증에 실패했습니다."),
 
+    _REWARD_ALREADY_GRANTED(HttpStatus.CONFLICT, "MISSION411", "이미 리워드를 지급받은 미션입니다."),
+    _MISSION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "MISSION412", "미션을 완료하지 않아 리워드를 지급할 수 없습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

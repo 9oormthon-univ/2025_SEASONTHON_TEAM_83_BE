@@ -12,7 +12,6 @@ public class ChallengeResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ChallengeStartDto {
-        private Long memberChallengeId;
         private ChallengeStatus missionStatus;
         private LocalDateTime startedAt;
     }
@@ -52,6 +51,17 @@ public class ChallengeResponseDto {
         private String imageUrl;
         private Integer point;
         private String description;
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChallengeCompleteDto {
+        private Integer rewardPoint;
+        private LocalDateTime endedAt;
+
     }
 
 
