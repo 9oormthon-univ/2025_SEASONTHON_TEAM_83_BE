@@ -17,3 +17,8 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
+
+#ipv6랑 ipv4 문제 있는데 gpt가 이거 넣으래
+server:
+  address: 0.0.0.0
+  port: 8080
