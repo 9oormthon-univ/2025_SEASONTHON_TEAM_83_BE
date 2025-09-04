@@ -51,3 +51,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+//깃허브 액션 빌드 시 필요
+jar {
+	enabled = false
+}
