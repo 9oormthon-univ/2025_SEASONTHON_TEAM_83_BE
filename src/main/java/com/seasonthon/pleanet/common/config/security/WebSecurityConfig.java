@@ -25,7 +25,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers("/static/**","/upload/**");
+                .requestMatchers("/static/**","/uploads/**");
     }
 
     @Bean
