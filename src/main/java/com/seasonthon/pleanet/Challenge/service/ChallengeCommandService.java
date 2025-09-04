@@ -180,9 +180,15 @@ public class ChallengeCommandService {
 
     // 사진 인증 검증 (ChatGPT Vision API) (+ 포인트 지급)
     @Transactional
-    public VerifyResponse verifyPhoto(Long memberChallengeId) {
-        MemberChallenge mc = memberChallengeRepository.findById(memberChallengeId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
+    public VerifyResponse verifyPhoto(Long challengeId,Long memberId) {
+
+        MemberChallenge mc = memberChallengeRepository
+                .findByMemberIdAndChallengeIdAndCreatedAtBetween(
+                        memberId,
+                        challengeId,
+                        LocalDate.now().atStartOfDay(),
+                        LocalDate.now().plusDays(1).atStartOfDay()
+                ).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
 
         // 미션 타입 확인
         if (mc.getChallenge().getType() != ChallengeType.PHOTO) {
