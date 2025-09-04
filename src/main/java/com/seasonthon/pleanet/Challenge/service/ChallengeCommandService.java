@@ -210,7 +210,7 @@ public class ChallengeCommandService {
             }
 
             // ChatGPT Vision API 호출 (텀블러 검증)
-            boolean verificationSuccess = chatGptVisionService.verifyTumbler(photoUrl);
+            boolean verificationSuccess = chatGptVisionService.verifyTumbler(photoUrl.trim());  // .trim()을 추가해서 보이지 않는 앞뒤 공백을 제거
 
             String message;
             int reward = 0;
