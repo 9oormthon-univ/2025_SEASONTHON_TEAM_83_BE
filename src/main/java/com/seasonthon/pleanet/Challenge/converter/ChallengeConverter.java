@@ -13,7 +13,6 @@ public class ChallengeConverter {
 
     public static ChallengeResponseDto.ChallengeStartDto toChallengeStartDto(MemberChallenge memberChallenge) {
         return ChallengeResponseDto.ChallengeStartDto.builder()
-                .memberChallengeId(memberChallenge.getId())
                 .missionStatus(memberChallenge.getStatus())
                 .startedAt(LocalDateTime.now())
                 .build();
@@ -49,6 +48,13 @@ public class ChallengeConverter {
                 .point(challenge.getRewardPoint())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
+                .build();
+    }
+
+    public static ChallengeResponseDto.ChallengeCompleteDto toChallengeCompleteDto(Integer rewardPoint) {
+        return ChallengeResponseDto.ChallengeCompleteDto.builder()
+                .rewardPoint(rewardPoint)
+                .endedAt(LocalDateTime.now())
                 .build();
     }
 }

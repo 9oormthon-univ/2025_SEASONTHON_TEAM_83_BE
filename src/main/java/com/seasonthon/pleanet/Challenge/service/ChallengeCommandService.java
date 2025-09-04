@@ -15,6 +15,11 @@ import com.seasonthon.pleanet.Challenge.repository.MemberChallengeRepository;
 import com.seasonthon.pleanet.Challenge.service.openai.ChatGptVisionService;
 import com.seasonthon.pleanet.apiPayload.code.status.ErrorStatus;
 import com.seasonthon.pleanet.apiPayload.exception.GeneralException;
+import com.seasonthon.pleanet.member.domain.Member;
+import com.seasonthon.pleanet.member.repository.MemberRepository;
+import com.seasonthon.pleanet.point.domain.Point;
+import com.seasonthon.pleanet.point.domain.PointType;
+import com.seasonthon.pleanet.point.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -29,6 +34,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 
@@ -42,6 +48,9 @@ public class ChallengeCommandService {
     private final S3Client s3Client;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ChatGptVisionService chatGptVisionService;  // ChatGPT Vision 서비스 주입
+    private final MemberRepository memberRepository;
+    private final PointRepository pointRepository;
+
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -81,12 +90,15 @@ public class ChallengeCommandService {
         return ChallengeConverter.toChallengeStartDto(mc);
     }
 
-    @Transactional
-    public ChallengeResponseDto.GpsDto updateProgress(Long memberChallengeId, ChallengeRequestDto.GpsDto request) {
+    public ChallengeResponseDto.GpsDto updateProgress(Long challengeId, Long memberId, ChallengeRequestDto.GpsDto request) {
 
-        MemberChallenge mc = memberChallengeRepository.findById(memberChallengeId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
-
+        MemberChallenge mc = memberChallengeRepository
+                .findByMemberIdAndChallengeIdAndCreatedAtBetween(
+                        memberId,
+                        challengeId,
+                        LocalDate.now().atStartOfDay(),
+                        LocalDate.now().plusDays(1).atStartOfDay()
+                ).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
         // 미션 타입 체크
         if (mc.getChallenge().getType() != ChallengeType.GPS) {
             throw new GeneralException(ErrorStatus._MISSION_NOT_GPS);
@@ -240,5 +252,49 @@ public class ChallengeCommandService {
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    public ChallengeResponseDto.ChallengeCompleteDto missionComplete(Long challengeId, Long memberId ) {
+
+        MemberChallenge mc = memberChallengeRepository
+                .findByMemberIdAndChallengeIdAndCreatedAtBetween(
+                        memberId,
+                        challengeId,
+                        LocalDate.now().atStartOfDay(),
+                        LocalDate.now().plusDays(1).atStartOfDay()
+                ).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
+
+        // 미션 상태 확인
+        if (mc.getStatus() != ChallengeStatus.SUCCESS) {
+            throw new GeneralException(ErrorStatus._MISSION_NOT_COMPLETED);
+        }
+
+        // 이미 리워드 지급받았는지 체크
+        if (mc.getRewardGranted()) {
+            throw new GeneralException(ErrorStatus._REWARD_ALREADY_GRANTED);
+        }
+
+        // 보상 포인트 가져오기
+        Integer rewardPoint = mc.getChallenge().getRewardPoint();
+
+        Member m = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+
+        // 포인트 지급 기록 생성
+        Point point = Point.builder()
+                .member(m)
+                .memberChallenge(mc)
+                .amount(rewardPoint)
+                .type(PointType.earn)
+                .description(mc.getChallenge().getTitle())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        pointRepository.save(point);
+
+        // 리워드 지급 처리
+        mc.setRewardGranted(true);
+
+        return ChallengeConverter.toChallengeCompleteDto(rewardPoint);
     }
 }

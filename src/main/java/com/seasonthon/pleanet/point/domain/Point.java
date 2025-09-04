@@ -1,5 +1,6 @@
 package com.seasonthon.pleanet.point.domain;
 
+import com.seasonthon.pleanet.Challenge.domain.MemberChallenge;
 import com.seasonthon.pleanet.attendance.domain.Attendance;
 import com.seasonthon.pleanet.member.domain.Member;
 import jakarta.persistence.*;
@@ -30,7 +31,9 @@ public class Point {
     private Attendance attendance;
 
     /** 챌린지 ID (추후 MemberChallenge 테이블과 연결, 지금은 null 허용) */
-    private Long memberChallengeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberChallenge_id", nullable = true)
+    private MemberChallenge memberChallenge;
 
     /** 포인트 양 (+적립, -사용) */
     private int amount;

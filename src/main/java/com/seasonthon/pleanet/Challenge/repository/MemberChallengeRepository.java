@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Repository
 public interface MemberChallengeRepository extends JpaRepository<MemberChallenge, Long> {
@@ -18,4 +19,10 @@ public interface MemberChallengeRepository extends JpaRepository<MemberChallenge
             LocalDateTime end
     );
 
+    Optional<MemberChallenge> findByMemberIdAndChallengeIdAndCreatedAtBetween(
+            Long memberId,
+            Long challengeId,
+            LocalDateTime start,
+            LocalDateTime end
+    );
 }
