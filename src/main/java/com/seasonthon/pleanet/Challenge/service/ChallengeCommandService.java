@@ -21,6 +21,7 @@ import com.seasonthon.pleanet.point.domain.Point;
 import com.seasonthon.pleanet.point.domain.PointType;
 import com.seasonthon.pleanet.point.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -37,7 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -183,10 +184,11 @@ public class ChallengeCommandService {
         }
     }
 
+
     // 사진 인증 검증 (ChatGPT Vision API) (+ 포인트 지급)
     @Transactional
-    public VerifyResponse verifyPhoto(Long challengeId,Long memberId) {
-
+    public VerifyResponse verifyPhoto(Long challengeId, Long memberId) {
+        // 1. DB에서 오늘 날짜로 생성된 사용자 챌린지 조회
         MemberChallenge mc = memberChallengeRepository
                 .findByMemberIdAndChallengeIdAndCreatedAtBetween(
                         memberId,
@@ -195,48 +197,58 @@ public class ChallengeCommandService {
                         LocalDate.now().plusDays(1).atStartOfDay()
                 ).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
 
-        // 미션 타입 확인
+        // 2. 사진 인증 타입의 챌린지인지 확인
         if (mc.getChallenge().getType() != ChallengeType.PHOTO) {
             throw new GeneralException(ErrorStatus._MISSION_NOT_PHOTO);
         }
 
+        // 3. extraData에서 photoUrl 추출
+        String photoUrl;
         try {
-            // extraData에서 photoUrl 가져오기
             Map<String, Object> extra = objectMapper.readValue(mc.getExtraData(), Map.class);
-            String photoUrl = (String) extra.get("photoUrl");
+            photoUrl = (String) extra.get("photoUrl");
 
-            if (photoUrl == null) {
-                throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
+            if (photoUrl == null || photoUrl.trim().isEmpty()) {
+                throw new GeneralException(ErrorStatus._PHOTO_URL_NOT_FOUND); // ErrorStatus에 _PHOTO_URL_NOT_FOUND 추가 필요
             }
-
-            // ChatGPT Vision API 호출 (텀블러 검증)
-            boolean verificationSuccess = chatGptVisionService.verifyTumbler(photoUrl.trim());  // .trim()을 추가해서 보이지 않는 앞뒤 공백을 제거
-
-            String message;
-            int reward = 0;
-
-            if (verificationSuccess) {
-                mc.setStatus(ChallengeStatus.SUCCESS);
-                mc.setRewardGranted(false); // 리워드는 아직 지급 안 함
-                message = "챌린지 성공!";
-
-            } else {
-                mc.setStatus(ChallengeStatus.FAIL);
-                mc.setRewardGranted(false);
-                message = "인증 실패, 재촬영 필요";
-            }
-
-            // extraData 업데이트
-            extra.put("verified", verificationSuccess);
-            mc.setExtraData(objectMapper.writeValueAsString(extra));
-
-            memberChallengeRepository.save(mc);
-
-            return new VerifyResponse(verificationSuccess, reward, message);
-
         } catch (Exception e) {
+            log.error("Failed to extract photoUrl from extraData: {}", e.getMessage());
             throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
         }
+
+        // 4. OpenAI Vision API 호출하여 키워드 받아오기
+        String resultKeyword = chatGptVisionService.getVerificationKeyword(photoUrl.trim());
+        log.info("AI Analysis Keyword for memberChallengeId {}: {}", mc.getId(), resultKeyword);
+
+        boolean verificationSuccess = false;
+        String message;
+        int reward = 0;
+
+        // 5. 반환된 키워드에 따라 분기 처리
+        switch (resultKeyword) {
+            case "SUCCESS":
+                verificationSuccess = true;
+                mc.setStatus(ChallengeStatus.SUCCESS);
+                message = "챌린지 성공!";
+                break;
+            case "NO_RECEIPT":
+                mc.setStatus(ChallengeStatus.FAIL);
+                message = "인증 실패, 영수증이 보이지 않아요.";
+                break;
+            case "NO_TUMBLER":
+                mc.setStatus(ChallengeStatus.FAIL);
+                message = "인증 실패, 텀블러가 보이지 않아요.";
+                break;
+            default: // FAIL 또는 예상치 못한 다른 응답
+                mc.setStatus(ChallengeStatus.FAIL);
+                message = "인증 실패, 텀블러와 영수증이 모두 필요해요.";
+                break;
+        }
+
+        mc.setRewardGranted(false);
+        // memberChallengeRepository.save(mc); // @Transactional 어노테이션에 의해 dirty-checking으로 자동 저장됨
+
+        return new VerifyResponse(verificationSuccess, reward, message);
     }
 
     //path 배열을 순회하며 거리 합계 계산 (km)
