@@ -25,7 +25,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers("/static/**","/upload/**");
+                .requestMatchers("/static/**","/uploads/**");
     }
 
     @Bean
@@ -33,7 +33,7 @@ public class WebSecurityConfig {
         http    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v2/api-docs", "/v3/api-docs/**","/swagger-resources/**","/webjars/**","/configuration/**","/api/**","/login","/callback","/health").permitAll() //나중에 추가하자
+                        .requestMatchers("/","/swagger-ui/**", "/swagger-ui.html", "/v2/api-docs", "/v3/api-docs/**","/swagger-resources/**","/webjars/**","/configuration/**","/api/**","/login","/callback","/health").permitAll() //나중에 추가하자
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
