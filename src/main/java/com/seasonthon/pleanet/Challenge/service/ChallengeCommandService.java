@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDate;
@@ -38,7 +37,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 
-@Service
+@Servicegit
 @RequiredArgsConstructor
 @Transactional
 public class ChallengeCommandService {
