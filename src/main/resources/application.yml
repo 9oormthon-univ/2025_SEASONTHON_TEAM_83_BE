@@ -1,20 +1,11 @@
-#spring:
-#  jpa:
-#    #전송 쿼리 확인
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
-#
-#
-#    #테이블 생성 후에 data.sql 실행
-#    defer-datasource-initialization: true
-# 구름톤 설정
 
- #UMC 설정
 spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 300MB
   profiles:
-    active: local
+    active: deploy
 
 jwt:
   issuer: ajufresh@gmail.com
@@ -24,3 +15,15 @@ jwt:
 kakao:
   client_id: ${KAKAO_API_KEY}
   redirect_uri: ${REDIRECT_URI}
+
+cloud:
+  aws:
+    s3:
+      bucket: pleanet  # S3 버킷명
+    region:
+      static: ap-northeast-2   # 서울 리전
+    stack:
+      auto: false
+
+openai:
+  api-key: ${OPENAI_API_KEY}

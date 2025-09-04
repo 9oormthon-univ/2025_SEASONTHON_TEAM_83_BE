@@ -31,6 +31,11 @@ public class KaokaoLoginController {
         return ApiResponse.onSuccess(memberService.kakaoLogin(request,response, memberService.kakaoSignup(userInfo)));
     }
 
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "I'm healthy!";
+    }
+
 
 
 }
