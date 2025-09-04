@@ -206,32 +206,8 @@ public class ChallengeCommandService {
 
             if (verificationSuccess) {
                 mc.setStatus(ChallengeStatus.SUCCESS);
-
-                // 이미 보상 지급한 경우 중복 방지
-                if (Boolean.TRUE.equals(mc.getRewardGranted())) {
-                    throw new GeneralException(ErrorStatus._REWARD_ALREADY_GRANTED);
-                }
-
-                // rewardPoint DB에서 가져오기
-                reward = mc.getChallenge().getRewardPoint();
-
-                // Member 조회
-                Member member = mc.getMember();
-
-                // 포인트 적립 기록 생성
-                Point point = Point.builder()
-                        .member(member)
-                        .memberChallenge(mc)
-                        .amount(reward)
-                        .type(PointType.earn)
-                        .description("텀블러 사용 인증 보상")
-                        .createdAt(LocalDateTime.now())
-                        .build();
-
-                pointRepository.save(point);
-
-                mc.setRewardGranted(true);
-                message = "챌린지 성공! +" + reward + "P 지급";
+                mc.setRewardGranted(false); // 리워드는 아직 지급 안 함
+                message = "챌린지 성공!";
 
             } else {
                 mc.setStatus(ChallengeStatus.FAIL);
