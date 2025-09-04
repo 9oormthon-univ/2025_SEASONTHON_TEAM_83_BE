@@ -1,12 +1,18 @@
 package com.seasonthon.pleanet.point.service;
 
+import com.seasonthon.pleanet.apiPayload.code.status.ErrorStatus;
+import com.seasonthon.pleanet.apiPayload.exception.GeneralException;
+import com.seasonthon.pleanet.point.domain.Point;
 import com.seasonthon.pleanet.point.dto.PointBalanceResponse;
+import com.seasonthon.pleanet.point.dto.PointHistoryResponse;
 import com.seasonthon.pleanet.point.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +54,7 @@ public class PointService {
             rawProgress = 100.0;
         }
 
-        // ✅ 소수점 둘째 자리 반올림
+        // 소수점 둘째 자리 반올림
         double progress = BigDecimal.valueOf(rawProgress)
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();
@@ -60,5 +66,23 @@ public class PointService {
                 .nextLevel(nextLevel)
                 .progressToNextLevel(progress)
                 .build();
+    }
+
+    // 특정 멤버의 포인트 히스토리 조회
+    public List<PointHistoryResponse> getPointHistories(Long memberId) {
+        List<Point> histories = pointRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId);
+
+        if (histories.isEmpty()) {
+            throw new GeneralException(ErrorStatus._SEARCH_HISTORY_NOT_FOUND);
+        }
+
+        return histories.stream()
+                .map(h -> PointHistoryResponse.builder()
+                        .date(h.getCreatedAt().toLocalDate().toString()) // LocalDateTime → YYYY-MM-DD
+                        .type(h.getType().name())                        // enum → 문자열
+                        .description(h.getDescription())                 // 설명
+                        .pointChange(h.getAmount())                      // 증감 포인트
+                        .build())
+                .collect(Collectors.toList());
     }
 }

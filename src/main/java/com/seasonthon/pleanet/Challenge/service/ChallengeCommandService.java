@@ -57,6 +57,10 @@ public class ChallengeCommandService {
 
     public ChallengeResponseDto.ChallengeStartDto startMission(Long memberId, Long challengeId) {
 
+        // memberId로 Member 엔티티 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+
         Challenge c = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._MISSION_NOT_FOUND));
 
@@ -80,7 +84,7 @@ public class ChallengeCommandService {
         }
 
         MemberChallenge mc = MemberChallenge.builder()
-                .memberId(memberId)
+                .member(member)
                 .challenge(c)
                 .status(ChallengeStatus.IN_PROGRESS)
                 .rewardGranted(false)
@@ -144,7 +148,7 @@ public class ChallengeCommandService {
         try {
             // S3에 업로드할 key 구성
             String key = "challenges/" + mc.getChallenge().getId() + "/"
-                    + mc.getMemberId() + "_" + System.currentTimeMillis()
+                    + mc.getMember().getId() + "_" + System.currentTimeMillis()
                     + "_" + file.getOriginalFilename();
 
             // S3 업로드
@@ -174,7 +178,7 @@ public class ChallengeCommandService {
         }
     }
 
-    // 사진 인증 검증 (ChatGPT Vision API)
+    // 사진 인증 검증 (ChatGPT Vision API) (+ 포인트 지급)
     @Transactional
     public VerifyResponse verifyPhoto(Long memberChallengeId) {
         MemberChallenge mc = memberChallengeRepository.findById(memberChallengeId)
@@ -194,7 +198,7 @@ public class ChallengeCommandService {
                 throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
             }
 
-            // ChatGPT Vision API 호출
+            // ChatGPT Vision API 호출 (텀블러 검증)
             boolean verificationSuccess = chatGptVisionService.verifyTumbler(photoUrl);
 
             String message;
@@ -202,9 +206,9 @@ public class ChallengeCommandService {
 
             if (verificationSuccess) {
                 mc.setStatus(ChallengeStatus.SUCCESS);
-                mc.setRewardGranted(true);
-                reward = 50; // ⭐️ 포인트 지급 로직 연결 필요
-                message = "챌린지 성공! +50P 지급";
+                mc.setRewardGranted(false); // 리워드는 아직 지급 안 함
+                message = "챌린지 성공!";
+
             } else {
                 mc.setStatus(ChallengeStatus.FAIL);
                 mc.setRewardGranted(false);
