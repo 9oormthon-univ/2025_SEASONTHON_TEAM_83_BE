@@ -1,5 +1,6 @@
 package com.seasonthon.pleanet.Challenge.dto.res;
 
+import com.seasonthon.pleanet.Challenge.domain.Challenge;
 import com.seasonthon.pleanet.Challenge.domain.ChallengeStatus;
 import lombok.*;
 
@@ -38,6 +39,14 @@ public class ChallengeResponseDto {
         private String title;
         private String imageUrl;
         private Integer point;
+
+        // Challenge 엔티티를 DTO로 변환하는 생성자
+        public ChallengeListDto(Challenge challenge) {
+            this.challengeId = challenge.getId();
+            this.title = challenge.getTitle();
+            this.imageUrl = challenge.getImageUrl();
+            this.point = challenge.getRewardPoint();
+        }
     }
 
     @Builder
@@ -64,7 +73,11 @@ public class ChallengeResponseDto {
 
     }
 
-
-
-
+    // 오늘의 챌린지 추천 API 응답 DTO
+    @Getter
+    @AllArgsConstructor
+    public static class ChallengeRecommendationDto {
+        private ChallengeListDto lastChallenge;
+        private ChallengeListDto recommendedChallenge;
+    }
 }

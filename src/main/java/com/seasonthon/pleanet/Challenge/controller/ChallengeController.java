@@ -73,4 +73,13 @@ public class ChallengeController {
     public ApiResponse<ChallengeResponseDto.ChallengeCompleteDto> missionComplete(@PathVariable Long challengeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.onSuccess(challengeCommandService.missionComplete(challengeId, userDetails.getId()));
     }
+
+    // 오늘의 챌린지 추천 API
+    @GetMapping("/recommendation")
+    public ApiResponse<ChallengeResponseDto.ChallengeRecommendationDto> getRecommendation(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // 로그인한 사용자의 ID를 가져와서 서비스 호출
+        Long memberId = userDetails.getId();
+        return ApiResponse.onSuccess(challengeQueryService.getChallengeRecommendation(memberId));
+    }
 }
