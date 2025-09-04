@@ -37,7 +37,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 
-@Servicegit
+@Service
 @RequiredArgsConstructor
 @Transactional
 public class ChallengeCommandService {
