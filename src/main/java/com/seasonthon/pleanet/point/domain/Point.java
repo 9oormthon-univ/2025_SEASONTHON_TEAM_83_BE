@@ -22,7 +22,7 @@ public class Point {
 
     /** 대상 사용자 (Member와 다대일 관계) */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)  // user_id → member_id로 수정
     private Member member;
 
     /** 출석 ID (Attendance와 다대일 관계, null 허용) */
