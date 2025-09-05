@@ -21,6 +21,7 @@ import com.seasonthon.pleanet.point.domain.Point;
 import com.seasonthon.pleanet.point.domain.PointType;
 import com.seasonthon.pleanet.point.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -41,6 +42,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ChallengeCommandService {
 
     private final MemberChallengeRepository memberChallengeRepository;
@@ -179,6 +181,9 @@ public class ChallengeCommandService {
             return new PhotoResponse(photoUrl, true);
 
         } catch (Exception e) {
+
+            e.printStackTrace(); // 콘솔에 스택트레이스 출력
+            log.error("Photo upload failed for memberChallengeId {}: {}", mc.getId(), e.getMessage(), e);
             throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
         }
     }
