@@ -13,8 +13,10 @@ import com.seasonthon.pleanet.point.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,8 @@ public class AttendanceService {
         return response;
     }
 
+    // 쓰기 작업이 포함되므로 @Transactional 추가
+    @Transactional
     public AttendanceCheckResponseDto checkToday(Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Long memberId = userDetails.getId();
@@ -62,7 +66,9 @@ public class AttendanceService {
 
         // 이미 출석했는지 체크
         if (attendanceRepository.findByMemberIdAndAttendanceDate(memberId, today).isPresent()) {
-            return new AttendanceCheckResponseDto("오늘은 이미 출석체크 하셨습니다.", today.toString(), 0);
+            // 이미 출석했더라도, 현재 누적 포인트는 계산해서 알려주기
+            int currentTotalPoints = getCurrentMonthPoints(memberId);
+            return new AttendanceCheckResponseDto("오늘은 이미 출석체크 하셨습니다.", today.toString(), 0, currentTotalPoints);
         }
 
         // 출석 저장
@@ -79,12 +85,17 @@ public class AttendanceService {
                 .amount(3)
                 .type(PointType.earn)
                 .description("출석 체크")
+                .createdAt(LocalDateTime.now())
                 .build();
         pointRepository.save(point);
 
-        return new AttendanceCheckResponseDto("출석되었습니다", today.toString(), 3);
+        // 포인트 저장 직후, 같은 트랜잭션 내에서 누적 포인트를 조회
+        int updatedTotalPoints = getCurrentMonthPoints(memberId);
+
+        return new AttendanceCheckResponseDto("출석되었습니다", today.toString(), 3, updatedTotalPoints);
     }
 
+    // 기존 포인트 합계 조회 API의 서비스 로직을 private 헬퍼 메소드로 활용
     public int getCurrentMonthPoints(Long memberId) {
         LocalDate today = LocalDate.now();
         int year = today.getYear();
