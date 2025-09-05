@@ -28,6 +28,6 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     Integer getUserCurrentPoints(@Param("userId") Long userId);
 
     // 포인트 내역 조회
-    List<Point> findAllByMember_IdOrderByCreatedAtDesc(Long memberId);
+    List<Point> findAllByMemberIdOrderByCreatedAtDesc(Long memberId);
 }
 

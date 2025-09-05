@@ -31,9 +31,10 @@ public class PointController {
     // 포인트 히스토리 조회
     @GetMapping("/history")
     public ApiResponse<List<PointHistoryResponse>> getPointHistory(
-            @AuthenticationPrincipal CustomUserDetails user
+            // Long memberId 대신 CustomUserDetails를 받도록 수정
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long memberId = user.getId();  // Member 엔티티의 PK
+        Long memberId = userDetails.getId();
         List<PointHistoryResponse> histories = pointService.getPointHistories(memberId);
         return ApiResponse.onSuccess(histories);
     }
