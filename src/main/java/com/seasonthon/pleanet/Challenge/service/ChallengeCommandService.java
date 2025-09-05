@@ -42,7 +42,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class ChallengeCommandService {
 
     private final MemberChallengeRepository memberChallengeRepository;
