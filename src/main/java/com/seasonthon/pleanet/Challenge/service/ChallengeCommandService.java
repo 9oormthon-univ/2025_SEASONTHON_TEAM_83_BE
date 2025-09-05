@@ -190,7 +190,7 @@ public class ChallengeCommandService {
     }
 
 
-    // 사진 인증 검증 (ChatGPT Vision API) (+ 포인트 지급)
+    // 사진 인증 검증 (ChatGPT Vision API)
     @Transactional
     public VerifyResponse verifyPhoto(Long challengeId, Long memberId) {
         // 1. DB에서 오늘 날짜로 생성된 사용자 챌린지 조회
@@ -227,7 +227,6 @@ public class ChallengeCommandService {
 
         boolean verificationSuccess = false;
         String message;
-        int reward = 0;
 
         // 5. 반환된 키워드에 따라 분기 처리
         switch (resultKeyword) {
@@ -244,6 +243,10 @@ public class ChallengeCommandService {
                 mc.setStatus(ChallengeStatus.FAIL);
                 message = "인증 실패, 텀블러가 보이지 않아요.";
                 break;
+            case "NOT_CAFE_RECEIPT":
+                mc.setStatus(ChallengeStatus.FAIL);
+                message = "인증 실패, 카페 영수증이 확인되지 않아요.";
+                break;
             default: // FAIL 또는 예상치 못한 다른 응답
                 mc.setStatus(ChallengeStatus.FAIL);
                 message = "인증 실패, 텀블러와 영수증이 모두 필요해요.";
@@ -251,9 +254,8 @@ public class ChallengeCommandService {
         }
 
         mc.setRewardGranted(false);
-        // memberChallengeRepository.save(mc); // @Transactional 어노테이션에 의해 dirty-checking으로 자동 저장됨
 
-        return new VerifyResponse(verificationSuccess, reward, message);
+        return new VerifyResponse(verificationSuccess, message);
     }
 
     //path 배열을 순회하며 거리 합계 계산 (km)
