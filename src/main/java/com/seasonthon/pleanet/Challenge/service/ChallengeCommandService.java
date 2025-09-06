@@ -247,14 +247,6 @@ public class ChallengeCommandService {
                 mc.setStatus(ChallengeStatus.FAIL);
                 message = "인증 실패, 카페 영수증이 확인되지 않아요.";
                 break;
-            case "OLD_RECEIPT":
-                mc.setStatus(ChallengeStatus.FAIL);
-                message = "인증 실패, 오늘 날짜의 카페 영수증이 아닙니다.";
-                break;
-            case "NO_DATE":
-                mc.setStatus(ChallengeStatus.FAIL);
-                message = "인증 실패, 날짜가 보이게 찍어주세요.";
-                break;
             default: // FAIL 또는 예상치 못한 다른 응답
                 mc.setStatus(ChallengeStatus.FAIL);
                 message = "인증 실패, 텀블러와 오늘 날짜 카페 영수증이 모두 필요해요.";
