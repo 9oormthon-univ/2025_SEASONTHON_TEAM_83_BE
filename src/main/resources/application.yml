@@ -5,7 +5,7 @@ spring:
       max-file-size: 200MB
       max-request-size: 300MB
   profiles:
-    active: deploy
+    active: local
 
 jwt:
   issuer: ajufresh@gmail.com
