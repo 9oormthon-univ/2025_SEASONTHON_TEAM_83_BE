@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -30,18 +32,21 @@ public class ChatGptVisionService {
 
     // 사진 URL을 OpenAI Vision API로 보내 텀블러와 카페 영수증 존재 여부를 분석하고, 결과에 해당하는 키워드를 반환
     public String getVerificationKeyword(String photoUrl) {
-        // OpenAI에 전달할 프롬프트. 이미지 분석 후 5가지 키워드 중 하나로만 응답하도록 지시 (카페 영수증 검증 추가)
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        String todayStr = today.toString();
+
+        // OpenAI에 전달할 프롬프트. 이미지 분석 후 7가지 키워드 중 하나로만 응답하도록 지시 (카페 영수증 검증 추가)
         String prompt = """
-        첨부된 이미지를 분석하고, 결과에 따라 다음 일곱 가지 키워드 중 오직 하나로만 응답해: SUCCESS, NO_RECEIPT, NO_TUMBLER, NOT_CAFE_RECEIPT, OLD_RECEIPT, NO_DATE, FAIL
-        - 텀블러와 '오늘 날짜의 카페 영수증'이 모두 보이면: SUCCESS
+        첨부된 이미지를 분석하고, 결과에 따라 다음 키워드 중 오직 하나만 응답해:
+        - 텀블러와 '%s' 날짜의 카페 영수증이 모두 보이면: SUCCESS
         - 텀블러만 보이면: NO_RECEIPT
         - 영수증이 보이지만 카페 영수증이 아님: NOT_CAFE_RECEIPT
-        - 카페 영수증이 보이지만 오늘 날짜가 아님: OLD_RECEIPT
-        - 카페 영수증이 보이는데 날짜가 아예 안 보이면: NO_DATE (→ "날짜가 보이게 찍어주세요" 안내)
+        - 카페 영수증이 보이지만 날짜가 '%s'가 아님: OLD_RECEIPT
+        - 카페 영수증이 보이는데 날짜 자체가 안 보이면: NO_DATE
         - 영수증만 보이거나 텀블러가 없으면: NO_TUMBLER
         - 둘 다 보이지 않으면: FAIL
-        다른 설명 없이 키워드만 응답해야 해.
-        """;
+        다른 설명 없이 키워드만 응답해.
+        """.formatted(todayStr, todayStr);
 
         try {
             // OpenAI API에 보낼 요청 바디를 Map 객체로 구성
