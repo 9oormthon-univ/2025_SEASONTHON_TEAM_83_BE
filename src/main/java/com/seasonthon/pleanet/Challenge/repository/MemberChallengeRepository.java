@@ -1,6 +1,7 @@
 package com.seasonthon.pleanet.Challenge.repository;
 
 import com.seasonthon.pleanet.Challenge.domain.ChallengeStatus;
+import com.seasonthon.pleanet.Challenge.domain.ChallengeType;
 import com.seasonthon.pleanet.Challenge.domain.MemberChallenge;
 import jakarta.validation.constraints.Email;
 import org.springframework.data.domain.Page;
@@ -35,4 +36,7 @@ public interface MemberChallengeRepository extends JpaRepository<MemberChallenge
     Optional<MemberChallenge> findTopByMemberIdOrderByCreatedAtDesc(Long memberId);
 
     Page<MemberChallenge> findAllByMember_Id(Long memberId, Pageable pageable);
+
+    long countByMemberIdAndChallenge_Type(Long memberId, ChallengeType type);
+    long countByMemberIdAndChallenge_TypeAndStatus(Long memberId, ChallengeType type, ChallengeStatus status);
 }
