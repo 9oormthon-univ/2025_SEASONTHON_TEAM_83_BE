@@ -26,8 +26,8 @@ public class Reward {
 
     /** 리워드 종류 (zeropay, tree) */
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RewardType type;
+    @Column(name = "reward_type", nullable = false)
+    private RewardType rewardType;
 
     /** 사용 포인트 */
     @Column(name = "point_used", nullable = false)

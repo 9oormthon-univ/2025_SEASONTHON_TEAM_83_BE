@@ -19,7 +19,8 @@ public class Badge extends BaseEntity {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private BadgeType category;
+    private BadgeType category;  // ACTIVITY, POINT, SPECIAL
+
 
     private String iconUrl;
 

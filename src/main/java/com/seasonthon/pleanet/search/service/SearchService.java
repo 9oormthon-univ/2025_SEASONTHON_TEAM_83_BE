@@ -53,11 +53,11 @@ public class SearchService {
         List<SearchResultResponse.RewardResult> rewards = Collections.emptyList();
         try {
             RewardType rewardType = RewardType.valueOf(keyword.toUpperCase());
-            rewards = rewardRepository.findByType(rewardType)
+            rewards = rewardRepository.findByRewardType(rewardType)
                     .stream()
                     .map(r -> new SearchResultResponse.RewardResult(
                             r.getId(),
-                            r.getType().name(),   // ENUM → 문자열
+                            r.getRewardType().name(),   // ENUM → 문자열
                             r.getPointUsed()
                     ))
                     .toList();

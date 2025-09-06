@@ -13,4 +13,6 @@ public interface MemberBadgeRepository extends JpaRepository<MemberBadge,Long> {
 
     // 멤버가 획득한 뱃지 목록 조회
     List<MemberBadge> findAllByMemberId(Long memberId);
+
+    boolean existsByMemberIdAndBadgeId(Long memberId, Long badgeId);
 }

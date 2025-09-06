@@ -29,5 +29,8 @@ public interface PointRepository extends JpaRepository<Point, Long> {
 
     // 포인트 내역 조회
     List<Point> findAllByMemberIdOrderByCreatedAtDesc(Long memberId);
+
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Point p WHERE p.member.id = :memberId")
+    int sumByMemberId(Long memberId);
 }
 
