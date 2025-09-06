@@ -8,6 +8,7 @@ import com.seasonthon.pleanet.member.domain.Member;
 import com.seasonthon.pleanet.member.dto.res.MemberResponseDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ChallengeConverter {
 
@@ -57,4 +58,14 @@ public class ChallengeConverter {
                 .endedAt(LocalDateTime.now())
                 .build();
     }
+
+    public static ChallengeResponseDto.ChallengeLatestDto toChallengeLatestDto(MemberChallenge memberChallenge) {
+        return ChallengeResponseDto.ChallengeLatestDto.builder()
+                .title(memberChallenge.getChallenge().getTitle())
+                .endedAt(memberChallenge.getEndedAt())
+                .build();
+    }
+
+
+
 }

@@ -4,6 +4,7 @@ import static com.seasonthon.pleanet.Challenge.dto.res.ChallengeResponseDto.*;
 import com.seasonthon.pleanet.Challenge.converter.ChallengeConverter;
 import com.seasonthon.pleanet.Challenge.domain.Challenge;
 import com.seasonthon.pleanet.Challenge.domain.MemberChallenge;
+import com.seasonthon.pleanet.Challenge.dto.res.ChallengeResponseDto;
 import com.seasonthon.pleanet.Challenge.repository.ChallengeRepository;
 import com.seasonthon.pleanet.Challenge.repository.MemberChallengeRepository;
 import com.seasonthon.pleanet.apiPayload.code.status.ErrorStatus;
@@ -80,6 +81,13 @@ public class ChallengeQueryService {
         ChallengeListDto recommendedChallengeDto = (recommendedChallenge != null) ? new ChallengeListDto(recommendedChallenge) : null;
 
         return new ChallengeRecommendationDto(lastChallengeDto, recommendedChallengeDto);
+    }
+
+    public Page<ChallengeLatestDto> getMissionsLatest(Pageable pageable,Long memberId){
+
+        Page<MemberChallenge> memberChallenges = memberChallengeRepository.findAllByMember_Id(memberId, pageable);
+
+        return memberChallenges.map(ChallengeConverter::toChallengeLatestDto);
     }
 }
 

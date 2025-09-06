@@ -17,6 +17,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/challenges")
@@ -81,5 +83,11 @@ public class ChallengeController {
         // 로그인한 사용자의 ID를 가져와서 서비스 호출
         Long memberId = userDetails.getId();
         return ApiResponse.onSuccess(challengeQueryService.getChallengeRecommendation(memberId));
+    }
+
+    @GetMapping("/latest")
+    public ApiResponse<Page<ChallengeResponseDto.ChallengeLatestDto>> getMissionsLatest(@PageableDefault(size = 2) Pageable pageable,
+                                                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(challengeQueryService.getMissionsLatest(pageable,userDetails.getId()));
     }
 }

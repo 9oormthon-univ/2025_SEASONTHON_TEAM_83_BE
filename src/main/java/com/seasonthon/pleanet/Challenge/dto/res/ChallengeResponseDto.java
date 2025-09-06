@@ -4,7 +4,9 @@ import com.seasonthon.pleanet.Challenge.domain.Challenge;
 import com.seasonthon.pleanet.Challenge.domain.ChallengeStatus;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ChallengeResponseDto {
 
@@ -80,4 +82,18 @@ public class ChallengeResponseDto {
         private ChallengeListDto lastChallenge;
         private ChallengeListDto recommendedChallenge;
     }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChallengeLatestDto {
+        private String title;
+        private LocalDateTime endedAt;
+    }
+
+
+
+
 }

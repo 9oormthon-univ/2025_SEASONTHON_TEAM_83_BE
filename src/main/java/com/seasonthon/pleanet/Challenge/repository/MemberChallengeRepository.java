@@ -2,10 +2,15 @@ package com.seasonthon.pleanet.Challenge.repository;
 
 import com.seasonthon.pleanet.Challenge.domain.ChallengeStatus;
 import com.seasonthon.pleanet.Challenge.domain.MemberChallenge;
+import jakarta.validation.constraints.Email;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,6 +31,8 @@ public interface MemberChallengeRepository extends JpaRepository<MemberChallenge
             LocalDateTime end
     );
 
-    // 사용자의 가장 최근 참여 챌린지 조회 (생성일 내림차순 기준)
+
     Optional<MemberChallenge> findTopByMemberIdOrderByCreatedAtDesc(Long memberId);
+
+    Page<MemberChallenge> findAllByMember_Id(Long memberId, Pageable pageable);
 }
