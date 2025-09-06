@@ -6,8 +6,6 @@ spring:
       max-request-size: 300MB
   profiles:
     active: deploy
-  jackson:
-    time-zone: Asia/Seoul
 
 jwt:
   issuer: ajufresh@gmail.com
