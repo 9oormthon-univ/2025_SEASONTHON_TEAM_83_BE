@@ -9,6 +9,6 @@ public class AttendanceCheckResponseDto {
     private String message;
     private String date;
     private int earnedPoint;
-    private int totalMonthPoints; // 👈 이번 달 누적 포인트를 담을 필드 추가
+    private int totalMonthPoints; // 이번 달 누적 포인트를 담을 필드 추가
 }
 

@@ -28,14 +28,15 @@ public class ChatGptVisionService {
             .baseUrl("https://api.openai.com/v1")
             .build();
 
-    // 사진 URL을 OpenAI Vision API로 보내 텀블러와 영수증 존재 여부를 분석하고, 결과에 해당하는 키워드를 반환
+    // 사진 URL을 OpenAI Vision API로 보내 텀블러와 카페 영수증 존재 여부를 분석하고, 결과에 해당하는 키워드를 반환
     public String getVerificationKeyword(String photoUrl) {
-        // OpenAI에 전달할 프롬프트. 이미지 분석 후 4가지 키워드 중 하나로만 응답하도록 지시
+        // OpenAI에 전달할 프롬프트. 이미지 분석 후 5가지 키워드 중 하나로만 응답하도록 지시 (카페 영수증 검증 추가)
         String prompt = """
-        첨부된 이미지를 분석하고, 결과에 따라 다음 네 가지 키워드 중 오직 하나로만 응답해: SUCCESS, NO_RECEIPT, NO_TUMBLER, FAIL
-        - 텀블러와 영수증이 모두 보이면: SUCCESS
+        첨부된 이미지를 분석하고, 결과에 따라 다음 다섯 가지 키워드 중 오직 하나로만 응답해: SUCCESS, NO_RECEIPT, NO_TUMBLER, NOT_CAFE_RECEIPT, FAIL
+        - 텀블러와 '카페 영수증'이 모두 보이면: SUCCESS
         - 텀블러만 보이면: NO_RECEIPT
-        - 영수증만 보이면: NO_TUMBLER
+        - 영수증이 보이지만 카페 영수증이 아님: NOT_CAFE_RECEIPT
+        - 영수증만 보이거나 텀블러가 없으면: NO_TUMBLER
         - 둘 다 보이지 않으면: FAIL
         다른 설명 없이 키워드만 응답해야 해.
         """;

@@ -15,6 +15,7 @@ import com.seasonthon.pleanet.Challenge.repository.MemberChallengeRepository;
 import com.seasonthon.pleanet.Challenge.service.openai.ChatGptVisionService;
 import com.seasonthon.pleanet.apiPayload.code.status.ErrorStatus;
 import com.seasonthon.pleanet.apiPayload.exception.GeneralException;
+import com.seasonthon.pleanet.common.service.ImageConverterService;
 import com.seasonthon.pleanet.member.domain.Member;
 import com.seasonthon.pleanet.member.repository.MemberRepository;
 import com.seasonthon.pleanet.point.domain.Point;
@@ -31,11 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -51,6 +52,7 @@ public class ChallengeCommandService {
     private final ChatGptVisionService chatGptVisionService;  // ChatGPT Vision 서비스 주입
     private final MemberRepository memberRepository;
     private final PointRepository pointRepository;
+    private final ImageConverterService imageConverterService; // ImageConverterService 주입
 
 
     @Value("${cloud.aws.s3.bucket}")
@@ -152,43 +154,43 @@ public class ChallengeCommandService {
         }
 
         try {
-            // S3에 업로드할 key 구성
+            // HEIC만 변환
+            ImageConverterService.ConvertedImage converted = imageConverterService.convertIfHeic(file);
+
+            // 원래 키 구성 유지 + 확장자 교체 반영된 filename 사용
             String key = "challenges/" + mc.getChallenge().getId() + "/"
                     + mc.getMember().getId() + "_" + System.currentTimeMillis()
-                    + "_" + file.getOriginalFilename();
+                    + "_" + converted.filename();
 
-            // S3 업로드
+            // S3에 변환된 JPEG 파일 업로드
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
-                    .contentType(file.getContentType())
+                    .contentType(converted.contentType())
                     .build();
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(converted.bytes()));
 
             String photoUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + key;
 
             // extraData 업데이트
-            JSONObject extra = (JSONObject) JSONValue.parse(mc.getExtraData());
-            if (extra == null) extra = new JSONObject();
+            Map<String, Object> extra = (mc.getExtraData() != null && !mc.getExtraData().isEmpty())
+                    ? objectMapper.readValue(mc.getExtraData(), Map.class)
+                    : new HashMap<>();
             extra.put("photoUrl", photoUrl);
             extra.put("uploadedAt", LocalDate.now().toString());
-
-            mc.setExtraData(extra.toString());
-            memberChallengeRepository.save(mc);
+            mc.setExtraData(objectMapper.writeValueAsString(extra));
 
             return new PhotoResponse(photoUrl, true);
 
         } catch (Exception e) {
-
-            e.printStackTrace(); // 콘솔에 스택트레이스 출력
             log.error("Photo upload failed for memberChallengeId {}: {}", mc.getId(), e.getMessage(), e);
             throw new GeneralException(ErrorStatus._UPLOAD_FAIL);
         }
     }
 
 
-    // 사진 인증 검증 (ChatGPT Vision API) (+ 포인트 지급)
+    // 사진 인증 검증 (ChatGPT Vision API)
     @Transactional
     public VerifyResponse verifyPhoto(Long challengeId, Long memberId) {
         // 1. DB에서 오늘 날짜로 생성된 사용자 챌린지 조회
@@ -225,7 +227,6 @@ public class ChallengeCommandService {
 
         boolean verificationSuccess = false;
         String message;
-        int reward = 0;
 
         // 5. 반환된 키워드에 따라 분기 처리
         switch (resultKeyword) {
@@ -242,6 +243,10 @@ public class ChallengeCommandService {
                 mc.setStatus(ChallengeStatus.FAIL);
                 message = "인증 실패, 텀블러가 보이지 않아요.";
                 break;
+            case "NOT_CAFE_RECEIPT":
+                mc.setStatus(ChallengeStatus.FAIL);
+                message = "인증 실패, 카페 영수증이 확인되지 않아요.";
+                break;
             default: // FAIL 또는 예상치 못한 다른 응답
                 mc.setStatus(ChallengeStatus.FAIL);
                 message = "인증 실패, 텀블러와 영수증이 모두 필요해요.";
@@ -249,9 +254,8 @@ public class ChallengeCommandService {
         }
 
         mc.setRewardGranted(false);
-        // memberChallengeRepository.save(mc); // @Transactional 어노테이션에 의해 dirty-checking으로 자동 저장됨
 
-        return new VerifyResponse(verificationSuccess, reward, message);
+        return new VerifyResponse(verificationSuccess, message);
     }
 
     //path 배열을 순회하며 거리 합계 계산 (km)
