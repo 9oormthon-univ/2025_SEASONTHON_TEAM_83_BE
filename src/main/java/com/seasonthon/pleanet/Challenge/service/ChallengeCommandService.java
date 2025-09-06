@@ -306,6 +306,8 @@ public class ChallengeCommandService {
                         LocalDate.now().plusDays(1).atStartOfDay()
                 ).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_MISSION_NOT_FOUND));
 
+        mc.setEndedAt(LocalDateTime.now());
+
         // 미션 상태 확인
         if (mc.getStatus() != ChallengeStatus.SUCCESS) {
             throw new GeneralException(ErrorStatus._MISSION_NOT_COMPLETED);
