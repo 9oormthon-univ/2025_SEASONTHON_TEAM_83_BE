@@ -13,6 +13,7 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Point p " +
             "WHERE p.member.id = :memberId " +
             "AND p.type = 'earn' " +
+            "AND p.attendance IS NOT NULL " +
             "AND FUNCTION('YEAR', p.createdAt) = :year " +
             "AND FUNCTION('MONTH', p.createdAt) = :month")
     int getMonthlyEarnedPoints(Long memberId, int year, int month);
